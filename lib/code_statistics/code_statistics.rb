@@ -3,10 +3,12 @@ module CodeStatistics
     
     TEST_TYPES = %w(Units Functionals Unit\ tests Functional\ tests Integration\ tests)
     
+    
     def initialize(*pairs)
-      @pairs = pairs
+      @pairs      = pairs
       @statistics = calculate_statistics
-      @total = calculate_total if pairs.length > 1
+      @total      = calculate_total if pairs.length > 1
+      @test_types = []
     end
     
     def to_s
@@ -26,10 +28,31 @@ module CodeStatistics
     def calculate_statistics
       @pairs.inject({}) { |stats, pair| stats[pair.first] = calculate_directory_statistics(pair.last); stats }
     end
+
+    def local_file_exists?(dir,filename)
+      File.exist?(File.join(dir,filename))
+    end
+
+    def test_types
+      (TEST_TYPES + @test_types).uniq
+    end
+
+    def add_test_type(test_type)
+      @test_types << test_type
+    end
     
     def calculate_directory_statistics(directory, pattern = /.*\.rb$/)
       stats = { "lines" => 0, "codelines" => 0, "classes" => 0, "methods" => 0 }
       
+      add_test_type("Model specs") if local_file_exists?(directory, 'spec/models')
+      add_test_type("View specs") if local_file_exists?(directory, 'spec/views')
+      add_test_type("Controller specs") if local_file_exists?(directory, 'spec/controllers')
+      add_test_type("Helper specs") if local_file_exists?(directory, 'spec/helpers')
+      add_test_type("Library specs") if local_file_exists?(directory, 'spec/lib')
+      add_test_type("Routing specs") if local_file_exists?(directory, 'spec/routing')
+      add_test_type("Integration specs") if local_file_exists?(directory, 'spec/integration')
+      add_test_type("Specs") if if local_file_exists?(directory, 'spec')
+
       Dir.foreach(directory) do |file_name|
         if File.stat(directory + "/" + file_name).directory? and (/^\./ !~ file_name)
           newstats = calculate_directory_statistics(directory + "/" + file_name, pattern)
@@ -59,13 +82,13 @@ module CodeStatistics
     
     def calculate_code
       code_loc = 0
-      @statistics.each { |k, v| code_loc += v['codelines'] unless TEST_TYPES.include? k }
+      @statistics.each { |k, v| code_loc += v['codelines'] unless test_types.include? k }
       code_loc
     end
     
     def calculate_tests
       test_loc = 0
-      @statistics.each { |k, v| test_loc += v['codelines'] if TEST_TYPES.include? k }
+      @statistics.each { |k, v| test_loc += v['codelines'] if test_types.include? k }
       test_loc
     end
     
@@ -83,7 +106,7 @@ module CodeStatistics
       m_over_c = (statistics["methods"] / statistics["classes"]) rescue m_over_c = 0
       loc_over_m = (statistics["codelines"] / statistics["methods"]) - 2 rescue loc_over_m = 0
       
-      start = if TEST_TYPES.include? name
+      start = if test_types.include? name
                 "| #{name.ljust(20)} "
               else
                 "| #{name.ljust(20)} "
