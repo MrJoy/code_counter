@@ -1,6 +1,8 @@
 = code_statistics
 
-This is a port of the rails 'rake stat' so it can be used on none rails projects and have it's features slowly expanded. 
+This is a port of the rails 'rake stat' so it can be used on none rails projects and have it's features slowly expanded. Please feel free to contact us if you have any ideas for additional stats that should be added.
+
+contact@devver.net
 
 == Note on Patches/Pull Requests
  
