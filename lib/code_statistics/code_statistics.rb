@@ -131,9 +131,9 @@ module CodeStatistics
       tests = calculate_tests
       
       ratio = if code!=0
-        #{sprintf("%.1f", tests.to_f/code)}
+        "#{sprintf("%.1f", tests.to_f/code)}"
       else
-        "0"
+        "0.0"
       end
       puts " Code LOC: #{code}  Test LOC: #{tests}  Code to Test Ratio: 1:#{ratio}"
       puts ""
