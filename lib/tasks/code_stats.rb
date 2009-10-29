@@ -6,7 +6,14 @@ STATS_DIRECTORIES = [
   %w(APIs app/apis),
   %w(Integration\ tests test/integration),
   %w(Functional\ tests test/functional),
-  %w(Unit\ tests test/unit)
+  %w(Unit\ tests test/unit),
+  %w(Model\ specs spec/models), 
+  %w(View\ specs spec/views),
+  %w(Controller\ specs spec/controllers),
+  %w(Helper\ specs spec/helpers),
+  %w(Library\ specs spec/lib),
+  %w(Routing\ specs spec/routing),
+  %w(Integration\ specs spec/integration)
 ].collect { |name, dir| [ name, "#{Dir.pwd}/#{dir}" ] }.select { |name, dir| File.directory?(dir) }
  
 desc "Report code statistics (KLOCs, etc) from the application"

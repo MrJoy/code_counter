@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{code_statistics}
-  s.version = "0.1.3"
+  s.version = "0.1.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Dan Mayer"]
-  s.date = %q{2009-10-28}
+  s.date = %q{2009-10-29}
   s.description = %q{"This is a port of the rails 'rake stats' method so it can be made more robust and work for non rails projects. New features may eventually be added as well."}
   s.email = %q{dan@devver.net}
   s.extra_rdoc_files = [

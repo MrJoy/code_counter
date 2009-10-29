@@ -5,10 +5,23 @@ module CodeStatistics
     
     
     def initialize(*pairs)
-      @pairs      = pairs
-      @statistics = calculate_statistics
-      @total      = calculate_total if pairs.length > 1
-      @test_types = []
+      @pairs       = pairs
+      @test_types  = []
+      directory    = Dir.pwd
+      @specs_found = false
+      add_test_type("Model specs") if local_file_exists?(directory, 'spec/models')
+      add_test_type("View specs") if local_file_exists?(directory, 'spec/views')
+      add_test_type("Controller specs") if local_file_exists?(directory, 'spec/controllers')
+      add_test_type("Helper specs") if local_file_exists?(directory, 'spec/helpers')
+      add_test_type("Library specs") if local_file_exists?(directory, 'spec/lib')
+      add_test_type("Routing specs") if local_file_exists?(directory, 'spec/routing')
+      add_test_type("Integration specs") if local_file_exists?(directory, 'spec/integration')
+      if @specs_found==false && local_file_exists?(directory, 'spec')
+        @pairs << %w(Specs spec)
+        add_test_type("Specs")
+      end
+      @statistics  = calculate_statistics
+      @total       = calculate_total if pairs.length > 1
     end
     
     def to_s
@@ -38,20 +51,12 @@ module CodeStatistics
     end
 
     def add_test_type(test_type)
+      @specs_found = true
       @test_types << test_type
     end
     
     def calculate_directory_statistics(directory, pattern = /.*\.rb$/)
       stats = { "lines" => 0, "codelines" => 0, "classes" => 0, "methods" => 0 }
-      
-      add_test_type("Model specs") if local_file_exists?(directory, 'spec/models')
-      add_test_type("View specs") if local_file_exists?(directory, 'spec/views')
-      add_test_type("Controller specs") if local_file_exists?(directory, 'spec/controllers')
-      add_test_type("Helper specs") if local_file_exists?(directory, 'spec/helpers')
-      add_test_type("Library specs") if local_file_exists?(directory, 'spec/lib')
-      add_test_type("Routing specs") if local_file_exists?(directory, 'spec/routing')
-      add_test_type("Integration specs") if local_file_exists?(directory, 'spec/integration')
-      add_test_type("Specs") if if local_file_exists?(directory, 'spec')
 
       Dir.foreach(directory) do |file_name|
         if File.stat(directory + "/" + file_name).directory? and (/^\./ !~ file_name)
@@ -125,7 +130,12 @@ module CodeStatistics
       code = calculate_code
       tests = calculate_tests
       
-      puts " Code LOC: #{code}  Test LOC: #{tests}  Code to Test Ratio: 1:#{sprintf("%.1f", tests.to_f/code)}"
+      ratio = if code!=0
+        #{sprintf("%.1f", tests.to_f/code)}
+      else
+        "0"
+      end
+      puts " Code LOC: #{code}  Test LOC: #{tests}  Code to Test Ratio: 1:#{ratio}"
       puts ""
     end
   end
