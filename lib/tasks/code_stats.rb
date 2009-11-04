@@ -1,3 +1,5 @@
+#todo for both spec and test look through top level add any directory seperately
+#get rid of the hard coded test/units / etc in this file and the lib file.
 STATS_DIRECTORIES = [
   %w(Controllers app/controllers),
   %w(Helpers app/helpers),
@@ -13,7 +15,9 @@ STATS_DIRECTORIES = [
   %w(Helper\ specs spec/helpers),
   %w(Library\ specs spec/lib),
   %w(Routing\ specs spec/routing),
-  %w(Integration\ specs spec/integration)
+  %w(Integration\ specs spec/integration),
+  %w(Public\ specs spec/public),
+  %w(Semipublic\ specs spec/semipublic)
 ].collect { |name, dir| [ name, "#{Dir.pwd}/#{dir}" ] }.select { |name, dir| File.directory?(dir) }
  
 desc "Report code statistics (KLOCs, etc) from the application"

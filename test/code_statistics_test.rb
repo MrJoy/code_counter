@@ -1,4 +1,5 @@
-require 'test_helper'
+#require 'test_helper'
+require File.expand_path("test_helper", File.dirname(__FILE__))
 
 class CodeStatisticsTest < Test::Unit::TestCase
   should "probably rename this file and start testing for real" do
