@@ -9,28 +9,25 @@ module CodeStatistics
       @test_types  = []
       directory    = Dir.pwd
       @specs_found = false
-      #todo for both spec and test look through top level add any directory seperately
-      #get rid of the hard coded test/units / etc in this file and the rakefile.
-      add_test_type("Model specs") if local_file_exists?(directory, 'spec/models')
-      add_test_type("View specs") if local_file_exists?(directory, 'spec/views')
-      add_test_type("Controller specs") if local_file_exists?(directory, 'spec/controllers')
-      add_test_type("Helper specs") if local_file_exists?(directory, 'spec/helpers')
-      add_test_type("Library specs") if local_file_exists?(directory, 'spec/lib')
-      add_test_type("Routing specs") if local_file_exists?(directory, 'spec/routing')
-      add_test_type("Integration specs") if local_file_exists?(directory, 'spec/integration')
-      add_test_type("Public specs") if local_file_exists?(directory, 'spec/public')
-      add_test_type("Semipublic specs") if local_file_exists?(directory, 'spec/semipublic')
-      if @specs_found==false && local_file_exists?(directory, 'spec')
-        @pairs << %w(Specs spec)
-        add_test_type("Specs")
-      end
+
+      #if tests weren't broken up into test/unit functional etc, add the root test directory
       if local_file_exists?(directory, 'test') &&
           (!local_file_exists?(directory, 'test/unit') &&
            !local_file_exists?(directory, 'test/functional') &&
            !local_file_exists?(directory, 'test/integration'))
         @pairs << %w(Tests test)
-        add_test_type("Tests")
       end
+
+      @pairs.each do |key, dir_path|
+        add_test_type(key) if dir_path.match(/^test\//) || dir_path.match(/^spec\//)
+      end
+
+      #if spec tests weren't broken up into smaller test directories add the root spec directory
+      if @specs_found==false && local_file_exists?(directory, 'spec')
+        @pairs << %w(Specs spec)
+        add_test_type("Specs")
+      end
+
       @statistics  = calculate_statistics
       @total       = calculate_total if pairs.length > 1
     end
