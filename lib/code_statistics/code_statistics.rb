@@ -3,11 +3,12 @@ module CodeStatistics
 
     attr_reader :print_buffer
 
-    def initialize(*pairs)
+    def initialize(pairs, ignore_file_globs = [])
       @pairs        = pairs
       @test_types   = []
       @print_buffer = "" 
       directory     = Dir.pwd
+      @ignore_files = collect_files_to_ignore(ignore_file_globs)
 
       directories_to_search = ['app','test','spec','merb','features', 'bin']
       recursively_add_directories(directories_to_search)
@@ -36,6 +37,14 @@ module CodeStatistics
           @pairs << [dir.capitalize, dir] unless has_directories
         end
       end
+    end
+
+    def collect_files_to_ignore(ignore_file_globs)
+      files_to_remove = []
+      ignore_file_globs.each do |glob|
+        files_to_remove.concat(Dir[glob])
+      end
+      files_to_remove.map{ |filepath| File.expand_path(filepath)}
     end
     
     def to_s
@@ -70,18 +79,24 @@ module CodeStatistics
       @test_types << test_type
     end
     
+    def ignore_file?(file_path)
+      @ignore_files.include?(File.expand_path(file_path))
+    end
+
     def calculate_directory_statistics(directory, pattern = /.*\.rb$/)
       stats = { "lines" => 0, "codelines" => 0, "classes" => 0, "methods" => 0 }
 
       Dir.foreach(directory) do |file_name|
         if File.stat(directory + "/" + file_name).directory? and (/^\./ !~ file_name)
-          newstats = calculate_directory_statistics(directory + "/" + file_name, pattern)
+          newstats = calculate_directory_statistics(File.join(directory,file_name), pattern)
           stats.each { |k, v| stats[k] += newstats[k] }
         end
         
         next unless file_name =~ pattern
+        file_path = File.join(directory, file_name)
+        next if ignore_file?(file_path)
         
-        f = File.open(directory + "/" + file_name)
+        f = File.open(file_path)
         
         while line = f.gets
           stats["lines"] += 1

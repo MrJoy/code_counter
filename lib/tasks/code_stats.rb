@@ -13,15 +13,21 @@ if ENV['DIRECTORIES_TO_CALCULATE']
   end
 end
 
+if ENV['IGNORE_FILE_GLOBS']
+  user_ignored_dirs = ENV['IGNORE_FILE_GLOBS'].split(',')
+else
+  user_ignored_dirs = []
+end
+
 desc "Report code statistics (KLOCs, etc) from the application"
 task :stats do
   require File.join(File.dirname(__FILE__), '..', 'code_statistics', 'code_statistics')
-  puts CodeStatistics::CodeStatistics.new(*stats_directories).to_s
+  puts CodeStatistics::CodeStatistics.new(stats_directories, user_ignored_dirs).to_s
 end
 
 #this is for apps that already had a stats task, but want to use the newer features of this gem
 desc "Report code statistics (KLOCs, etc) from the application"
 task :code_stats do
   require File.join(File.dirname(__FILE__), '..', 'code_statistics', 'code_statistics')
-  puts CodeStatistics::CodeStatistics.new(*stats_directories).to_s
+  puts CodeStatistics::CodeStatistics.new(stats_directories, user_ignored_dirs).to_s
 end
