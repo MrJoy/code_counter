@@ -2,6 +2,14 @@
 
 This is a port of the rails 'rake stat' so it can be used on none rails projects and have it's features slowly expanded. Please feel free to contact us if you have any ideas for additional stats that should be added.
 
+todos:
+* make bin accept passed cmd line arguments to run
+* stop relying on ENV vars
+* count number of total files
+* count number of of .rb or passed in filter files
+* find todo, perf, bug, hack, etc comments and display them with info about them (line number etc)
+
+
 contact@devver.net
 
 == Note on Patches/Pull Requests

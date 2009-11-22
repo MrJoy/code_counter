@@ -129,7 +129,14 @@ module CodeStatistics
     
     def print_header
       print_splitter
-      @print_buffer << "| Name | Lines | LOC | Classes | Methods | M/C | LOC/M |\n"
+      @print_buffer << "| Name".ljust(22)+" "+
+        "| Lines".ljust(8)+
+        "| LOC".ljust(8)+
+        "| Classes".ljust(10)+
+        "| Methods".ljust(10)+
+        "| M/C".ljust(6)+
+        "| LOC/M".ljust(6)+
+        " |\n"
       print_splitter
     end
     
@@ -147,13 +154,15 @@ module CodeStatistics
                 "| #{name.ljust(20)} "
               end
       
-      @print_buffer << start +
-        "| #{statistics["lines"].to_s.rjust(5)} " +
-        "| #{statistics["codelines"].to_s.rjust(5)} " +
-        "| #{statistics["classes"].to_s.rjust(7)} " +
-        "| #{statistics["methods"].to_s.rjust(7)} " +
-        "| #{m_over_c.to_s.rjust(3)} " +
-        "| #{loc_over_m.to_s.rjust(5)} |\n"
+      if (statistics['lines']!=0)
+        @print_buffer << start +
+          "| #{statistics["lines"].to_s.rjust(5)} " +
+          "| #{statistics["codelines"].to_s.rjust(5)} " +
+          "| #{statistics["classes"].to_s.rjust(7)} " +
+          "| #{statistics["methods"].to_s.rjust(7)} " +
+          "| #{m_over_c.to_s.rjust(3)} " +
+          "| #{loc_over_m.to_s.rjust(5)} |\n"
+      end
     end
     
     def print_code_test_stats

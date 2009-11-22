@@ -5,13 +5,15 @@
 
 Gem::Specification.new do |s|
   s.name = %q{code_statistics}
-  s.version = "0.2.1"
+  s.version = "0.2.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Dan Mayer"]
-  s.date = %q{2009-11-18}
+  s.date = %q{2009-11-22}
+  s.default_executable = %q{code_statistics}
   s.description = %q{"This is a port of the rails 'rake stats' method so it can be made more robust and work for non rails projects. New features may eventually be added as well."}
   s.email = %q{dan@devver.net}
+  s.executables = ["code_statistics"]
   s.extra_rdoc_files = [
     "LICENSE",
      "README.rdoc"
@@ -23,6 +25,7 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "VERSION",
+     "bin/code_statistics",
      "code_statistics.gemspec",
      "lib/code_statistics.rb",
      "lib/code_statistics/code_statistics.rb",
@@ -46,10 +49,13 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_development_dependency(%q<thoughtbot-shoulda>, [">= 0"])
+      s.add_development_dependency(%q<devver-construct>, [">= 0"])
     else
       s.add_dependency(%q<thoughtbot-shoulda>, [">= 0"])
+      s.add_dependency(%q<devver-construct>, [">= 0"])
     end
   else
     s.add_dependency(%q<thoughtbot-shoulda>, [">= 0"])
+    s.add_dependency(%q<devver-construct>, [">= 0"])
   end
 end

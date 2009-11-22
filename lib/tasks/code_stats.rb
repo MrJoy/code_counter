@@ -19,15 +19,19 @@ else
   user_ignored_dirs = []
 end
 
-desc "Report code statistics (KLOCs, etc) from the application"
-task :stats do
+def report_stats(stats_directories, user_ignored_dirs)
   require File.join(File.dirname(__FILE__), '..', 'code_statistics', 'code_statistics')
   puts CodeStatistics::CodeStatistics.new(stats_directories, user_ignored_dirs).to_s
+end
+
+desc "Report code statistics (KLOCs, etc) from the application"
+task :stats do
+  report_stats(stats_directories, user_ignored_dirs)
 end
 
 #this is for apps that already had a stats task, but want to use the newer features of this gem
 desc "Report code statistics (KLOCs, etc) from the application"
 task :code_stats do
-  require File.join(File.dirname(__FILE__), '..', 'code_statistics', 'code_statistics')
-  puts CodeStatistics::CodeStatistics.new(stats_directories, user_ignored_dirs).to_s
+  report_stats(stats_directories, user_ignored_dirs)
 end
+
