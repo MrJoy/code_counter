@@ -10,7 +10,7 @@ if ENV['DIRECTORIES_TO_CALCULATE']
   user_defined_dirs = ENV['DIRECTORIES_TO_CALCULATE'].split(',')
   user_defined_dirs.each do |dir|
     if File.directory?(dir)
-      stats_directories << [dir.capitalize, "#{Dir.pwd}/#{dir}"]
+      stats_directories << [dir, "#{Dir.pwd}/#{dir}"]
     end
   end
 end
