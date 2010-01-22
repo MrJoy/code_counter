@@ -30,11 +30,11 @@ module CodeStatistics
           entries.each do |entry|
             entry_path = File.join(dir,entry)
             if File.directory?(entry_path) 
-              @pairs << [entry_path.capitalize, entry_path]
+              @pairs << [entry_path, entry_path]
               has_directories = true
             end
           end
-          @pairs << [dir.capitalize, dir] unless has_directories
+          @pairs << [dir, dir] unless has_directories
         end
       end
     end
