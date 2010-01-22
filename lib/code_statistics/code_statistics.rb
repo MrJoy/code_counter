@@ -146,8 +146,9 @@ module CodeStatistics
     
     def print_line(name, statistics)
       m_over_c = (statistics["methods"] / statistics["classes"]) rescue m_over_c = 0
-      loc_over_m = (statistics["codelines"] / statistics["methods"]) - 2 rescue loc_over_m = 0
-      
+      loc_over_m = (statistics["codelines"] / statistics["methods"]) rescue loc_over_m = 0
+      loc_over_m = love_over_m - 2 if loc_over_m >= 2
+
       start = if test_types.include? name
                 "| #{name.ljust(20)} "
               else

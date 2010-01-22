@@ -22,7 +22,7 @@ class CodeStatisticsTest < Test::Unit::TestCase
       controllers_dir = dir.directory("controllers")
       file            = controllers_dir.file("fake.rb", "this\nis\n\lame\n")
       code_stats      = CodeStatistics::CodeStatistics.new([])
-      assert code_stats.to_s.match(/App\/controllers/)
+      assert code_stats.to_s.match(/app\/controllers/)
       assert code_stats.to_s.match(/Code LOC: 3/)
     end
   end
@@ -33,7 +33,7 @@ class CodeStatisticsTest < Test::Unit::TestCase
       sub_dir         = dir.directory("servers")
       file            = sub_dir.file("fake.rb", "this\nis\n\lame\n")
       code_stats      = CodeStatistics::CodeStatistics.new([])
-      assert code_stats.to_s.match(/App\/servers/)
+      assert code_stats.to_s.match(/app\/servers/)
       assert code_stats.to_s.match(/Code LOC: 3/)
     end
   end
@@ -46,8 +46,8 @@ class CodeStatisticsTest < Test::Unit::TestCase
       sub_dir2        = dir.directory("controllers")
       file            = sub_dir2.file("fake.rb", "this\nis\n\lame\n")
       code_stats      = CodeStatistics::CodeStatistics.new([])
-      assert code_stats.to_s.match(/Spec\/models/)
-      assert code_stats.to_s.match(/Spec\/controllers/)
+      assert code_stats.to_s.match(/spec\/models/)
+      assert code_stats.to_s.match(/spec\/controllers/)
       assert code_stats.to_s.match(/Test LOC: 6/)
     end
   end
@@ -57,7 +57,7 @@ class CodeStatisticsTest < Test::Unit::TestCase
       dir             = construct.directory("spec")
       file            = dir.file("fake.rb", "this\nis\n\lame\n")
       code_stats      = CodeStatistics::CodeStatistics.new([])
-      assert code_stats.to_s.match(/Spec/)
+      assert code_stats.to_s.match(/spec/)
       assert code_stats.to_s.match(/Test LOC: 3/)
     end
   end
@@ -70,8 +70,8 @@ class CodeStatisticsTest < Test::Unit::TestCase
       sub_dir2        = dir.directory("controllers")
       file            = sub_dir2.file("fake.rb", "this\nis\n\lame\n")
       code_stats      = CodeStatistics::CodeStatistics.new([])
-      assert code_stats.to_s.match(/Test\/models/)
-      assert code_stats.to_s.match(/Test\/controllers/)
+      assert code_stats.to_s.match(/test\/models/)
+      assert code_stats.to_s.match(/test\/controllers/)
       assert code_stats.to_s.match(/Test LOC: 6/)
     end
   end
