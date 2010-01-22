@@ -1,6 +1,8 @@
 module CodeStatistics
   class CodeStatistics #:nodoc:
 
+    FILTER = /.*\.rb$/
+
     attr_reader :print_buffer
 
     def initialize(pairs, ignore_file_globs = [])
@@ -30,8 +32,10 @@ module CodeStatistics
           entries.each do |entry|
             entry_path = File.join(dir,entry)
             if File.directory?(entry_path) 
-              @pairs << [entry_path, entry_path]
-              has_directories = true
+              if Dir.entries(entry_path).select{|path| path.match(FILTER)}.length > 0
+                @pairs << [entry_path, entry_path]
+                has_directories = true
+              end
             end
           end
           @pairs << [dir, dir] unless has_directories
@@ -83,7 +87,7 @@ module CodeStatistics
       @ignore_files.include?(File.expand_path(file_path))
     end
 
-    def calculate_directory_statistics(directory, pattern = /.*\.rb$/)
+    def calculate_directory_statistics(directory, pattern = FILTER)
       stats = { "lines" => 0, "codelines" => 0, "classes" => 0, "methods" => 0 }
 
       Dir.foreach(directory) do |file_name|
@@ -147,7 +151,7 @@ module CodeStatistics
     def print_line(name, statistics)
       m_over_c = (statistics["methods"] / statistics["classes"]) rescue m_over_c = 0
       loc_over_m = (statistics["codelines"] / statistics["methods"]) rescue loc_over_m = 0
-      loc_over_m = love_over_m - 2 if loc_over_m >= 2
+      loc_over_m = loc_over_m - 2 if loc_over_m >= 2
 
       start = if test_types.include? name
                 "| #{name.ljust(20)} "
