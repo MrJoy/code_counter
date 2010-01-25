@@ -52,6 +52,31 @@ class CodeStatisticsTest < Test::Unit::TestCase
     end
   end
 
+  should "add spec sub sub directories and count as test code" do
+    within_construct do |construct|
+      dir             = construct.directory("spec")
+      sub_dir         = dir.directory("models")
+      sub_dir2        = sub_dir.directory("controllers")
+      file            = sub_dir2.file("fake.rb", "this\nis\n\lame\n")
+      code_stats      = CodeStatistics::CodeStatistics.new([])
+      assert code_stats.to_s.match(/spec\/models\/controllers/)
+      assert code_stats.to_s.match(/Test LOC: 3/)
+    end
+  end
+
+  should "add spec sub sub directories but add highest level directory with test files and count as test code" do
+    within_construct do |construct|
+      dir             = construct.directory("spec")
+      sub_dir         = dir.directory("models")
+      file            = sub_dir.file("top_fake.rb", "this\nis\n\lame\n")
+      sub_dir2        = sub_dir.directory("controllers")
+      file            = sub_dir2.file("fake.rb", "this\nis\n\lame\n")
+      code_stats      = CodeStatistics::CodeStatistics.new([])
+      assert code_stats.to_s.match(/spec\/models/)
+      assert code_stats.to_s.match(/Test LOC: 6/)
+    end
+  end
+
   should "add spec root directory and count as test code" do
     within_construct do |construct|
       dir             = construct.directory("spec")
@@ -125,6 +150,5 @@ class CodeStatisticsTest < Test::Unit::TestCase
       assert code_stats.to_s.match(/Code to Test Ratio: 1:0.7/)
     end
   end
-
 
 end

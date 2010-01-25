@@ -28,19 +28,31 @@ module CodeStatistics
         if File.directory?(dir)
           entries = Dir.entries(dir)
           entries = entries.reject{ |entry| entry=='.' || entry=='..' }
-          has_directories = false
-          entries.each do |entry|
-            entry_path = File.join(dir,entry)
-            if File.directory?(entry_path) 
-              if Dir.entries(entry_path).select{|path| path.match(FILTER)}.length > 0
-                @pairs << [entry_path, entry_path]
-                has_directories = true
-              end
-            end
-          end
+          has_directories = add_sub_directory(entries, dir)
           @pairs << [dir, dir] unless has_directories
         end
       end
+    end
+
+    def add_sub_directory(entries, dir)
+      has_directories = false
+      entries = entries.reject{ |entry| entry=='.' || entry=='..' }
+      entries.each do |entry|
+        entry_path = File.join(dir,entry)
+        if File.directory?(entry_path) 
+          if Dir.entries(entry_path).select{|path| path.match(FILTER)}.length > 0
+            @pairs << [entry_path, entry_path]
+            has_directories = true
+          else
+            has_directories = add_sub_directory(Dir.entries(entry_path), entry_path)
+            if has_directories == false && Dir.entries(entry_path).select{|path| path.match(FILTER)}.length > 0
+              @pairs << [entry_path, entry_path]
+              has_directories = true
+            end
+          end
+        end
+      end
+      has_directories
     end
 
     def collect_files_to_ignore(ignore_file_globs)

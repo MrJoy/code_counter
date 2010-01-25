@@ -12,7 +12,7 @@ begin
     gem.homepage = "http://github.com/danmayer/code_statistics"
     gem.authors = ["Dan Mayer"]
     gem.add_development_dependency "thoughtbot-shoulda" 
-    gem.add_development_dependency "devver-construct"
+    gem.add_development_dependency "test-construct"
     gem.executables = ['code_statistics']
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
