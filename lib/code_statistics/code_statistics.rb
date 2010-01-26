@@ -79,6 +79,7 @@ module CodeStatistics
     end
     
     private
+
     def calculate_statistics
       @pairs.inject({}) { |stats, pair| stats[pair.first] = calculate_directory_statistics(pair.last); stats }
     end
@@ -132,17 +133,19 @@ module CodeStatistics
     end
     
     def calculate_code
-      code_loc = 0
-      @statistics.each { |k, v| code_loc += v['codelines'] unless test_types.include? k }
-      code_loc
+      calculate_type(false)
     end
     
     def calculate_tests
-      test_loc = 0
-      @statistics.each { |k, v| test_loc += v['codelines'] if test_types.include? k }
-      test_loc
+      calculate_type(true)
     end
     
+    def calculate_type(test_match)
+      type_loc = 0
+      @statistics.each { |k, v| type_loc += v['codelines'] if test_types.include?(k)==test_match }
+      type_loc
+    end
+
     def print_header
       print_splitter
       @print_buffer << "| Name".ljust(22)+" "+
@@ -159,10 +162,14 @@ module CodeStatistics
     def print_splitter
       @print_buffer << "+----------------------+-------+-------+---------+---------+-----+-------+\n"
     end
+
+    def x_over_y(top, bottom)
+      result = (top / bottom) rescue result = 0
+    end
     
     def print_line(name, statistics)
-      m_over_c = (statistics["methods"] / statistics["classes"]) rescue m_over_c = 0
-      loc_over_m = (statistics["codelines"] / statistics["methods"]) rescue loc_over_m = 0
+      m_over_c = x_over_y(statistics["methods"], statistics["classes"])
+      loc_over_m = x_over_y(statistics["codelines"], statistics["methods"])
       loc_over_m = loc_over_m - 2 if loc_over_m >= 2
 
       start = if test_types.include? name
