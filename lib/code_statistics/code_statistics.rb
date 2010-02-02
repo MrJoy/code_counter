@@ -13,6 +13,7 @@ module CodeStatistics
       @ignore_files = collect_files_to_ignore(ignore_file_globs)
 
       directories_to_search = ['app','test','spec','merb','features', 'bin']
+      directories_to_search = remove_included_pairs(directories_to_search, @pairs)
       recursively_add_directories(directories_to_search)
 
       @pairs.each do |key, dir_path|
@@ -82,6 +83,11 @@ module CodeStatistics
 
     def calculate_statistics
       @pairs.inject({}) { |stats, pair| stats[pair.first] = calculate_directory_statistics(pair.last); stats }
+    end
+
+    def remove_included_pairs(directories_to_search, pairs)
+      #if the user explicitly said to index the directory index it at the level specified not recursively
+      directories_to_search.reject{|dir| @pairs.map{|pair| pair.first}.include?(dir)}
     end
 
     def local_file_exists?(dir,filename)
