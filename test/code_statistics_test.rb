@@ -15,6 +15,18 @@ class CodeStatisticsTest < Test::Unit::TestCase
       assert code_stats.to_s.match(/Code LOC: 6/)
     end
   end
+
+  should "not duplicate passed in directories with same paths with slashes" do
+    within_construct do |construct|
+      dir             = construct.directory("lib")
+      file            = dir.file("real.rb", "this\nis\n\lame\n")
+      controllers_dir = dir.directory("controllers")
+      file            = controllers_dir.file("fake.rb", "this\nis\n\lame\n")
+      code_stats      = CodeStatistics::CodeStatistics.new([["Libraries", 'lib'], ["libs", 'lib/']])
+      assert code_stats.to_s.match(/Libraries/)
+      assert code_stats.to_s.match(/Code LOC: 6/)
+    end
+  end
   
   should "find app controllers directory" do
     within_construct do |construct|
@@ -106,6 +118,16 @@ class CodeStatisticsTest < Test::Unit::TestCase
       dir             = construct.directory("test")
       file            = dir.file("fake.rb", "this\nis\n\lame\n")
       code_stats      = CodeStatistics::CodeStatistics.new([])
+      assert code_stats.to_s.match(/Test/)
+      assert code_stats.to_s.match(/Test LOC: 3/)
+    end
+  end
+
+  should "count test directory even if passed in as full path" do
+    within_construct do |construct|
+      dir             = construct.directory("test")
+      file            = dir.file("fake.rb", "this\nis\n\lame\n")
+      code_stats      = CodeStatistics::CodeStatistics.new([["test", dir.to_s]])
       assert code_stats.to_s.match(/Test/)
       assert code_stats.to_s.match(/Test LOC: 3/)
     end
