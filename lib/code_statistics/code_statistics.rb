@@ -50,8 +50,9 @@ module CodeStatistics
             @pairs << [entry_path, entry_path]
             has_directories = true
           else
-            has_directories = add_sub_directory(Dir.entries(entry_path), entry_path)
-            if has_directories == false && Dir.entries(entry_path).select{|path| path.match(FILTER)}.length > 0
+            sub_has_directories = add_sub_directory(Dir.entries(entry_path), entry_path)
+            has_directories = true if sub_has_directories
+            if sub_has_directories == false && Dir.entries(entry_path).select{|path| path.match(FILTER)}.length > 0
               @pairs << [entry_path, entry_path]
               has_directories = true
             end

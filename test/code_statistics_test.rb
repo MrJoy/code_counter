@@ -39,6 +39,18 @@ class CodeStatisticsTest < Test::Unit::TestCase
     end
   end
 
+  should "don't double count app directory when empty sub directories directory" do
+    within_construct do |construct|
+      dir             = construct.directory("app")
+      controllers_dir = dir.directory("controllers")
+      file            = controllers_dir.file("fake.rb", "this\nis\n\lame\n")
+      empty_sub_dir = dir.directory("zfolder")
+      code_stats      = CodeStatistics::CodeStatistics.new([])
+      assert code_stats.to_s.match(/app\/controllers/)
+      assert code_stats.to_s.match(/Code LOC: 3/)
+    end
+  end
+
   should "find app non rails directory" do
     within_construct do |construct|
       dir             = construct.directory("app")
