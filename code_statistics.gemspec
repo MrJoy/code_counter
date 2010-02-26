@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{code_statistics}
-  s.version = "0.2.10"
+  s.version = "0.2.11"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Dan Mayer"]
-  s.date = %q{2010-02-15}
+  s.date = %q{2010-02-25}
   s.default_executable = %q{code_statistics}
   s.description = %q{"This is a port of the rails 'rake stats' method so it can be made more robust and work for non rails projects. New features may eventually be added as well."}
   s.email = %q{dan@devver.net}
@@ -36,7 +36,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/danmayer/code_statistics}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{Making a gem of the normal rails rake stats method, to make it more robust and work on non rails projects}
   s.test_files = [
     "test/code_statistics_test.rb",
