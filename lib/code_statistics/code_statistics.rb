@@ -3,7 +3,7 @@ require 'pathname'
 module CodeStatistics
   class CodeStatistics #:nodoc:
 
-    FILTER = /.*\.rb$/
+    FILTER = /.*\.(rb|feature)$/
 
     attr_reader :print_buffer
 
@@ -16,14 +16,10 @@ module CodeStatistics
 
       @pairs = remove_duplicate_pairs(@pairs)
 
-      directories_to_search = ['app','test','spec','merb','features', 'bin']
+      directories_to_search = ['app','test','spec','merb', 'bin']
       directories_to_search = remove_included_pairs(directories_to_search, @pairs)
       recursively_add_directories(directories_to_search)
-
-      @pairs.each do |key, dir_path|
-        add_test_type(key) if dir_path.match(/^test/) || dir_path.match(/^spec/) || dir_path.match(/^features/) || 
-          dir_path.match(/test$/) || dir_path.match(/spec$/) || dir_path.match(/features$/)
-      end
+      add_test_types(@pairs)
       
       @statistics  = calculate_statistics
       @total       = calculate_total if pairs.length > 1
@@ -87,7 +83,7 @@ module CodeStatistics
     
     private
 
-    #user suplied paths and set paths might slight differ like path/name and path/name/ this filters those out
+    #user supplied paths and set paths might slight differ like path/name and path/name/ this filters those out
     def remove_duplicate_pairs(pairs)
       unique_pairs = []
       paths = pairs.map{|pair| [pair.first, Pathname.new(pair.last).realpath.to_s] }
@@ -95,8 +91,11 @@ module CodeStatistics
       unique_pairs
     end
 
-    def calculate_statistics
-      @pairs.inject({}) { |stats, pair| stats[pair.first] = calculate_directory_statistics(pair.last); stats }
+    def add_test_types(pairs)
+      pairs.each do |key, dir_path|
+        add_test_type(key) if dir_path.match(/^test/) || dir_path.match(/^spec/) || dir_path.match(/^features/) || 
+          dir_path.match(/test$/) || dir_path.match(/spec$/) || dir_path.match(/features$/)
+      end
     end
 
     def remove_included_pairs(directories_to_search, pairs)
@@ -106,6 +105,10 @@ module CodeStatistics
 
     def local_file_exists?(dir,filename)
       File.exist?(File.join(dir,filename))
+    end
+
+    def calculate_statistics
+      @pairs.inject({}) { |stats, pair| stats[pair.first] = calculate_directory_statistics(pair.last); stats }
     end
 
     def test_types
@@ -138,7 +141,7 @@ module CodeStatistics
         while line = f.gets
           stats["lines"] += 1
           stats["classes"] += 1 if line =~ /class [A-Z]/
-          stats["methods"] += 1 if line =~ /def [a-z]/
+          stats["methods"] += 1 if line =~ /(def [a-z]|should .* do|test .* do|it .* do)/
           stats["codelines"] += 1 unless line =~ /^\s*$/ || line =~ /^\s*#/
         end
       end
