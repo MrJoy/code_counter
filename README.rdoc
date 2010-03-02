@@ -1,6 +1,6 @@
 = code_statistics
 
-This is a port of the rails 'rake stat' so it can be used on none rails projects and have it's features slowly expanded. Please feel free to contact us if you have any ideas for additional stats that should be added.
+This is a port of the rails 'rake stat' so it can be used on none rails projects and have it's features slowly expanded. Please feel free to contact us if you have any ideas for additional stats that should be added. It in general tries to have defaults that work better for both rails and non rails projects. It specifically supports cucumber tests and rspec better than the original rails stats.
 
 todos:
 * make bin accept passed cmd line arguments to run
@@ -25,4 +25,4 @@ contact@devver.net
 
 == Copyright
 
-Copyright (c) 2009 Devver. See LICENSE for details.
+Copyright (c) 2010 Devver. See LICENSE for details.
