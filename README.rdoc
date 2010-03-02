@@ -8,7 +8,7 @@ todos:
 * count number of total files
 * count number of of .rb or passed in filter files
 * find todo, perf, bug, hack, etc comments and display them with info about them (line number etc)
-
+*reduce duplication between bin and task
 
 contact@devver.net
 

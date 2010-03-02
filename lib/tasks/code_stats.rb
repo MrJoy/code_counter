@@ -2,6 +2,7 @@ stats_directories = [
   %w(Libraries lib/),
   %w(Source source/),
   %w(Src src/),
+  %w(Features features/),
 ].collect { |name, dir| [ name, "#{Dir.pwd}/#{dir}" ] }.select { |name, dir| File.directory?(dir) }
 
 if ENV['DIRECTORIES_TO_CALCULATE']
