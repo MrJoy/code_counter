@@ -27,7 +27,7 @@ class CodeStatisticsTest < Test::Unit::TestCase
       assert code_stats.to_s.match(/Code LOC: 6/)
     end
   end
-  
+
   should "find app controllers directory" do
     within_construct do |construct|
       dir             = construct.directory("app")

@@ -10,7 +10,7 @@ module CodeStatistics
     def initialize(pairs, ignore_file_globs = [])
       @pairs        = pairs
       @test_types   = []
-      @print_buffer = "" 
+      @print_buffer = ""
       directory     = Dir.pwd
       @ignore_files = collect_files_to_ignore(ignore_file_globs)
 
@@ -20,7 +20,7 @@ module CodeStatistics
       directories_to_search = remove_included_pairs(directories_to_search, @pairs)
       recursively_add_directories(directories_to_search)
       add_test_types(@pairs)
-      
+
       @statistics  = calculate_statistics
       @total       = calculate_total if pairs.length > 1
     end
@@ -41,7 +41,7 @@ module CodeStatistics
       entries = entries.reject{ |entry| entry=='.' || entry=='..' }
       entries.each do |entry|
         entry_path = File.join(dir,entry)
-        if File.directory?(entry_path) 
+        if File.directory?(entry_path)
           if Dir.entries(entry_path).select{|path| path.match(FILTER)}.length > 0
             @pairs << [entry_path, entry_path]
             has_directories = true
@@ -65,22 +65,22 @@ module CodeStatistics
       end
       files_to_remove.map{ |filepath| File.expand_path(filepath)}
     end
-    
+
     def to_s
       @print_buffer = ''
       print_header
       @pairs.each { |pair| print_line(pair.first, @statistics[pair.first]) }
       print_splitter
-      
+
       if @total
         print_line("Total", @total)
         print_splitter
       end
-      
+
       print_code_test_stats
       @print_buffer
     end
-    
+
     private
 
     #user supplied paths and set paths might slight differ like path/name and path/name/ this filters those out
@@ -93,7 +93,7 @@ module CodeStatistics
 
     def add_test_types(pairs)
       pairs.each do |key, dir_path|
-        add_test_type(key) if dir_path.match(/^test/) || dir_path.match(/^spec/) || dir_path.match(/^features/) || 
+        add_test_type(key) if dir_path.match(/^test/) || dir_path.match(/^spec/) || dir_path.match(/^features/) ||
           dir_path.match(/test$/) || dir_path.match(/spec$/) || dir_path.match(/features$/)
       end
     end
@@ -118,7 +118,7 @@ module CodeStatistics
     def add_test_type(test_type)
       @test_types << test_type
     end
-    
+
     def ignore_file?(file_path)
       @ignore_files.include?(File.expand_path(file_path))
     end
@@ -131,13 +131,13 @@ module CodeStatistics
           newstats = calculate_directory_statistics(File.join(directory,file_name), pattern)
           stats.each { |k, v| stats[k] += newstats[k] }
         end
-        
+
         next unless file_name =~ pattern
         file_path = File.join(directory, file_name)
         next if ignore_file?(file_path)
-        
+
         f = File.open(file_path)
-        
+
         while line = f.gets
           stats["lines"] += 1
           stats["classes"] += 1 if line =~ /class [A-Z]/
@@ -145,24 +145,24 @@ module CodeStatistics
           stats["codelines"] += 1 unless line =~ /^\s*$/ || line =~ /^\s*#/
         end
       end
-      
+
       stats
     end
-    
+
     def calculate_total
       total = { "lines" => 0, "codelines" => 0, "classes" => 0, "methods" => 0 }
       @statistics.each_value { |pair| pair.each { |k, v| total[k] += v } }
       total
     end
-    
+
     def calculate_code
       calculate_type(false)
     end
-    
+
     def calculate_tests
       calculate_type(true)
     end
-    
+
     def calculate_type(test_match)
       type_loc = 0
       @statistics.each { |k, v| type_loc += v['codelines'] if test_types.include?(k)==test_match }
@@ -181,7 +181,7 @@ module CodeStatistics
         " |\n"
       print_splitter
     end
-    
+
     def print_splitter
       @print_buffer << "+----------------------+-------+-------+---------+---------+-----+-------+\n"
     end
@@ -189,7 +189,7 @@ module CodeStatistics
     def x_over_y(top, bottom)
       result = (top / bottom) rescue result = 0
     end
-    
+
     def print_line(name, statistics)
       m_over_c = x_over_y(statistics["methods"], statistics["classes"])
       loc_over_m = x_over_y(statistics["codelines"], statistics["methods"])
@@ -200,7 +200,7 @@ module CodeStatistics
               else
                 "| #{name.ljust(20)} "
               end
-      
+
       if (statistics['lines']!=0)
         @print_buffer << start +
           "| #{statistics["lines"].to_s.rjust(5)} " +
@@ -211,11 +211,11 @@ module CodeStatistics
           "| #{loc_over_m.to_s.rjust(5)} |\n"
       end
     end
-    
+
     def print_code_test_stats
       code = calculate_code
       tests = calculate_tests
-      
+
       ratio = if code!=0
         "#{sprintf("%.1f", tests.to_f/code)}"
       else
