@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'rake'
-require 'lib/tasks/code_stats'
+require_relative './lib/tasks/code_stats'
 
 begin
   require 'jeweler'
@@ -44,7 +44,7 @@ task :test => :check_dependencies
 
 task :default => :test
 
-require 'rake/rdoctask'
+require 'rdoc/task'
 Rake::RDocTask.new do |rdoc|
   if File.exist?('VERSION')
     version = File.read('VERSION')
