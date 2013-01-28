@@ -7,7 +7,11 @@ tries to have defaults that work better for both rails and non rails projects.
 It specifically supports cucumber tests and rspec better than the original
 rails stats.
 
-TODOs:
+## Requirements
+
+This project requires Ruby 1.9.x or higher.
+
+## TODOs
 
 * make bin accept passed cmd line arguments to run
 * stop relying on ENV vars
