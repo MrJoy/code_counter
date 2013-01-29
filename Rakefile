@@ -93,6 +93,7 @@ Rake::RDocTask.new do |rdoc|
   rdoc.title = "code_statistics #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('LICENSE')
+  rdoc.rdoc_files.include('CHANGELOG*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
 
