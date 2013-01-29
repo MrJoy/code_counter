@@ -11,6 +11,23 @@ rails stats.
 
 This project requires Ruby 1.9.x or higher.
 
+## Usage
+
+Add this to the botto of your `Rakefile`:
+
+```ruby
+require 'code_statistics'
+```
+
+Then, when you run `rake -T` you'll see a stats task, unless you already had
+one defined.  If you have an existing task named `stats`, and want to use this
+one, simply make a task of a new name that depends on the `code_statistic`
+task, like so:
+
+```ruby
+task :new_stats => :code_statistics
+```
+
 ## TODOs
 
 * make bin accept passed cmd line arguments to run

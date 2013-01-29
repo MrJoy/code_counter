@@ -25,14 +25,13 @@ def report_stats(stats_directories, user_ignored_dirs)
   puts CodeStatistics::CodeStatistics.new(stats_directories, user_ignored_dirs).to_s
 end
 
-desc "Report code statistics (KLOCs, etc) from the application"
-task :stats do
+# This is for apps that already had a stats task, but want to use the newer
+# features of this gem.
+task :code_statistics do
   report_stats(stats_directories, user_ignored_dirs)
 end
 
-#this is for apps that already had a stats task, but want to use the newer features of this gem
-desc "Report code statistics (KLOCs, etc) from the application"
-task :code_stats do
-  report_stats(stats_directories, user_ignored_dirs)
+if(Rake::Task[:stats].nil?)
+  desc "Report code statistics (KLOCs, etc) from the application"
+  task :stats => :code_statistics
 end
-
