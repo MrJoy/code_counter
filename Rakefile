@@ -15,7 +15,7 @@ require_relative './lib/code_statistics'
 
 require 'jeweler'
 require 'set'
-DEVELOPMENT_GROUPS||=[:development, :test]
+DEVELOPMENT_GROUPS||=[:development, :test, :cli]
 RUNTIME_GROUPS||=Set.new(Bundler.definition.groups - DEVELOPMENT_GROUPS)
 Jeweler::Tasks.new do |gem|
   gem.name = "code_statistics"
