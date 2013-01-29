@@ -131,7 +131,7 @@ module CodeStatistics
             while line = fh.gets
               stats["lines"] += 1
               stats["classes"] += 1 if line =~ /class [A-Z]/
-              stats["methods"] += 1 if line =~ /(def [a-z]|should .* do|test .* do|it .* do)/
+              stats["methods"] += 1 if line =~ /(def [a-z]|should .* do|test .* do|it .* do|(Given|When|Then) .* do)/
               stats["codelines"] += 1 unless line =~ /^\s*$/ || line =~ /^\s*#/
             end
           end
