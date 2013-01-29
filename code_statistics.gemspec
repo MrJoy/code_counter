@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jon Frisby", "Dan Mayer"]
-  s.date = "2013-01-28"
+  s.date = "2013-01-29"
   s.description = "This is a port of the rails 'rake stats' method so it can be made more robust and work for non rails projects. New features may eventually be added as well."
   s.email = "engineering@cloudability.com"
   s.executables = ["code_statistics"]
@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
     "README.md"
   ]
   s.files = [
+    "CHANGELOG.md",
     "LICENSE",
     "README.md",
     "bin/code_statistics",
