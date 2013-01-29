@@ -96,20 +96,3 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include('CHANGELOG*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
-
-namespace :fury do
-  desc "Push a build to GemFury."
-  task :push do
-    unless gem = ENV['GEM']
-      # Find the latest gem in the pkg directory
-      sorted_list = Dir[File.expand_path('../pkg/*.gem', __FILE__)].sort_by do |file_name|
-        version_info = file_name.match(/^.*-(?<version>[\d\.]+)\.gem$/)
-        version_info[:version]
-      end
-
-      gem = sorted_list.pop
-    end
-
-    sh "fury push #{gem} --as #{ENV['GEMFURY_ACCOUNT']}"
-  end
-end
