@@ -66,7 +66,6 @@ module CodeStatistics
     def initialize(ignore_file_globs = [])
       @pairs        = STATS_DIRECTORIES.select { |pair| File.directory?(pair[1]) }
       @print_buffer = ""
-      directory     = Dir.pwd
       @ignore_files = collect_files_to_ignore(ignore_file_globs)
 
       @pairs = coalesce_pairs(@pairs)
