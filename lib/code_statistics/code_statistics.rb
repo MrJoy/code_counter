@@ -1,61 +1,89 @@
 require 'pathname'
+require 'set'
 
 module CodeStatistics
   class CodeStatistics #:nodoc:
+    STATS_DIRECTORIES = []
+    TEST_TYPES = []
 
+    ###########################################################################
+    # Mechanisms for configuring the behavior of this tool
+    ###########################################################################
+    def self.clear!
+      STATS_DIRECTORIES.clear
+      TEST_TYPES.clear
+    end
+
+    def self.add_path(key, directory, recursive=true)
+      directory = File.expand_path(directory)
+      if File.directory?(directory)
+        STATS_DIRECTORIES << [key, directory]
+        if(recursive)
+          Dir.entries(directory).
+            reject { |dirent| dirent =~ /^\.\.?$/ }.
+            map { |dirent| File.join(directory, dirent) }.
+            reject { |dirent| !File.directory?(dirent) }.
+            each { |dirent| add_path(key, dirent, recursive) }
+        end
+      end
+    end
+
+    def self.add_test_group(key)
+      TEST_TYPES << key
+    end
+
+
+    ###########################################################################
+    # Default configuration
+    ###########################################################################
+    def self.init!
+      add_path("Controllers", "app/controllers")
+      add_path("Mailers", "app/mailers")
+      add_path("Models", "app/models")
+      add_path("Views", "app/views")
+      add_path("Helpers", "app/helpers")
+      add_path("Binaries", "bin")
+      add_path("Libraries", "lib")
+      add_path("Source", "source")
+      add_path("Source", "src")
+      add_path("Unit tests", "test")
+      add_path("RSpec specs", "spec")
+      add_path("Features", "features")
+
+      add_test_group("Unit tests")
+      add_test_group("RSpec specs")
+      add_test_group("Features")
+    end
+    init!
+
+
+    ###########################################################################
+    # Internals
+    ###########################################################################
     FILTER = /.*\.(rb|feature)$/
-
     attr_reader :print_buffer
 
-    def initialize(pairs, ignore_file_globs = [])
-      @pairs        = pairs
-      @test_types   = []
+    def initialize(ignore_file_globs = [])
+      @pairs        = STATS_DIRECTORIES.select { |pair| File.directory?(pair[1]) }
       @print_buffer = ""
       directory     = Dir.pwd
       @ignore_files = collect_files_to_ignore(ignore_file_globs)
 
-      @pairs = remove_duplicate_pairs(@pairs)
-
-      directories_to_search = ['app','test','spec','merb', 'bin']
-      directories_to_search = remove_included_pairs(directories_to_search, @pairs)
-      recursively_add_directories(directories_to_search)
-      add_test_types(@pairs)
+      @pairs = coalesce_pairs(@pairs)
 
       @statistics  = calculate_statistics
-      @total       = calculate_total if pairs.length > 1
+      @total       = calculate_total if @pairs.length > 1
     end
 
-    def recursively_add_directories(dirs)
-      dirs.each do |dir|
-        if File.directory?(dir)
-          entries = Dir.entries(dir)
-          entries = entries.reject{ |entry| entry=='.' || entry=='..' }
-          has_directories = add_sub_directory(entries, dir)
-          @pairs << [dir, dir] unless has_directories
-        end
+    def coalesce_pairs(pairs)
+      groups = {}
+      paths_seen = {}
+      pairs.each do |pair|
+        next if(paths_seen[pair.last])
+        paths_seen[pair.last] = true
+        (groups[pair.first] ||= Set.new) << pair.last
       end
-    end
-
-    def add_sub_directory(entries, dir)
-      has_directories = false
-      entries = entries.reject{ |entry| entry=='.' || entry=='..' }
-      entries.each do |entry|
-        entry_path = File.join(dir,entry)
-        if File.directory?(entry_path)
-          if Dir.entries(entry_path).select{|path| path.match(FILTER)}.length > 0
-            @pairs << [entry_path, entry_path]
-            has_directories = true
-          else
-            sub_has_directories = add_sub_directory(Dir.entries(entry_path), entry_path)
-            has_directories = true if sub_has_directories
-            if sub_has_directories == false && Dir.entries(entry_path).select{|path| path.match(FILTER)}.length > 0
-              @pairs << [entry_path, entry_path]
-              has_directories = true
-            end
-          end
-        end
-      end
-      has_directories
+      return groups
     end
 
     def collect_files_to_ignore(ignore_file_globs)
@@ -63,7 +91,7 @@ module CodeStatistics
       ignore_file_globs.each do |glob|
         files_to_remove.concat(Dir[glob])
       end
-      files_to_remove.map{ |filepath| File.expand_path(filepath)}
+      files_to_remove.map { |filepath| File.expand_path(filepath) }
     end
 
     def to_s
@@ -83,70 +111,35 @@ module CodeStatistics
 
     private
 
-    #user supplied paths and set paths might slight differ like path/name and path/name/ this filters those out
-    def remove_duplicate_pairs(pairs)
-      unique_pairs = []
-      paths = pairs.map{|pair| [pair.first, Pathname.new(pair.last).realpath.to_s] }
-      paths.each{|path| unique_pairs << path unless unique_pairs.map{|u_path| u_path.last}.include?(path.last)}
-      unique_pairs
-    end
-
-    def add_test_types(pairs)
-      pairs.each do |key, dir_path|
-        add_test_type(key) if dir_path.match(/^test/) || dir_path.match(/^spec/) || dir_path.match(/^features/) ||
-          dir_path.match(/test$/) || dir_path.match(/spec$/) || dir_path.match(/features$/)
-      end
-    end
-
-    def remove_included_pairs(directories_to_search, pairs)
-      #if the user explicitly said to index the directory index it at the level specified not recursively
-      directories_to_search.reject{|dir| @pairs.map{|pair| pair.first}.include?(dir)}
-    end
-
-    def local_file_exists?(dir,filename)
-      File.exist?(File.join(dir,filename))
-    end
-
     def calculate_statistics
-      @pairs.inject({}) { |stats, pair| stats[pair.first] = calculate_directory_statistics(pair.last); stats }
-    end
-
-    def test_types
-      @test_types.uniq
-    end
-
-    def add_test_type(test_type)
-      @test_types << test_type
+      @pairs.inject({}) { |stats, pair| stats[pair.first] = calculate_group_statistics(pair.last); stats }
     end
 
     def ignore_file?(file_path)
       @ignore_files.include?(File.expand_path(file_path))
     end
 
-    def calculate_directory_statistics(directory, pattern = FILTER)
+    def calculate_group_statistics(directories, pattern = FILTER)
       stats = { "lines" => 0, "codelines" => 0, "classes" => 0, "methods" => 0 }
 
-      Dir.foreach(directory) do |file_name|
-        if File.stat(directory + "/" + file_name).directory? and (/^\./ !~ file_name)
-          newstats = calculate_directory_statistics(File.join(directory,file_name), pattern)
-          stats.each { |k, v| stats[k] += newstats[k] }
-        end
+      directories.each do |directory|
+        Dir.foreach(directory) do |file_name|
+          next unless file_name =~ pattern
+          file_path = File.join(directory, file_name)
+          next if ignore_file?(file_path)
 
-        next unless file_name =~ pattern
-        file_path = File.join(directory, file_name)
-        next if ignore_file?(file_path)
-
-        f = File.open(file_path)
-
-        while line = f.gets
-          stats["lines"] += 1
-          stats["classes"] += 1 if line =~ /class [A-Z]/
-          stats["methods"] += 1 if line =~ /(def [a-z]|should .* do|test .* do|it .* do)/
-          stats["codelines"] += 1 unless line =~ /^\s*$/ || line =~ /^\s*#/
+          File.open(file_path) do |fh|
+            while line = fh.gets
+              stats["lines"] += 1
+              stats["classes"] += 1 if line =~ /class [A-Z]/
+              stats["methods"] += 1 if line =~ /(def [a-z]|should .* do|test .* do|it .* do)/
+              stats["codelines"] += 1 unless line =~ /^\s*$/ || line =~ /^\s*#/
+            end
+          end
         end
       end
 
-      stats
+      return stats
     end
 
     def calculate_total
@@ -165,7 +158,7 @@ module CodeStatistics
 
     def calculate_type(test_match)
       type_loc = 0
-      @statistics.each { |k, v| type_loc += v['codelines'] if test_types.include?(k)==test_match }
+      @statistics.each { |k, v| type_loc += v['codelines'] if TEST_TYPES.include?(k)==test_match }
       type_loc
     end
 
@@ -195,7 +188,7 @@ module CodeStatistics
       loc_over_m = x_over_y(statistics["codelines"], statistics["methods"])
       loc_over_m = loc_over_m - 2 if loc_over_m >= 2
 
-      start = if test_types.include? name
+      start = if TEST_TYPES.include? name
                 "| #{name.ljust(20)} "
               else
                 "| #{name.ljust(20)} "

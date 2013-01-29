@@ -11,7 +11,7 @@ rescue Bundler::BundlerError => e
 end
 require 'rake'
 
-require_relative './lib/tasks/code_stats'
+require_relative './lib/code_statistics'
 
 require 'jeweler'
 require 'set'
