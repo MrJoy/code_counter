@@ -7,13 +7,15 @@ tries to have defaults that work better for both rails and non rails projects.
 It specifically supports cucumber tests and rspec better than the original
 rails stats.
 
+
 ## Requirements
 
 This project requires Ruby 1.9.x or higher.
 
+
 ## Usage
 
-Add this to the botto of your `Rakefile`:
+Add this to the bottom of your `Rakefile`:
 
 ```ruby
 require 'code_statistics'
@@ -28,6 +30,8 @@ task, like so:
 task :new_stats => :code_statistics
 ```
 
+
+
 ## TODOs
 
 * make bin accept passed cmd line arguments to run
@@ -40,16 +44,18 @@ task :new_stats => :code_statistics
 
 [jfrisby@mrjoy.com](mailto:jfrisby@mrjoy.com)
 
+
 ## Note on Patches/Pull Requests
 
 * Fork the project.
 * Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a
-  future version unintentionally.
-* Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but
-  bump version in a commit by itself I can ignore when I pull)
+* Add tests for it. This is important so I don't break it in a future version
+  unintentionally.
+* Commit, do not mess with rakefile, version, or history.  (if you want to have
+  your own version, that is fine but bump version in a commit by itself I can
+  ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
+
 
 ## Copyright
 
