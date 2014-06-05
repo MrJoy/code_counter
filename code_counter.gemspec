@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.email = "jfrisby@mrjoy.com"
   s.executables = ["code_counter"]
   s.extra_rdoc_files = [
+    "CHANGELOG.md",
     "LICENSE",
     "README.md"
   ]

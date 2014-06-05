@@ -28,6 +28,8 @@ Jeweler::Tasks.new do |gem|
   gem.authors = ["Jon Frisby", "Dan Mayer"]
   gem.executables = ['code_counter']
   gem.required_ruby_version = ">= 1.9.2"
+  gem.extra_rdoc_files = FileList["*.md"].sort
+
   # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   # Jeweler wants to manage dependencies for us when there's a Gemfile.
   # We override it so we can skip development dependencies, and so we can
@@ -86,10 +88,10 @@ require 'rdoc/task'
 Rake::RDocTask.new do |rdoc|
   version = CodeCounter::VERSION
 
-  rdoc.rdoc_dir = 'rdoc'
+  rdoc.rdoc_dir = 'doc'
   rdoc.title = "code_counter #{version}"
-  rdoc.rdoc_files.include('README*')
+  rdoc.main = 'README.md'
+  rdoc.rdoc_files.include('*.md')
   rdoc.rdoc_files.include('LICENSE')
-  rdoc.rdoc_files.include('CHANGELOG*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end

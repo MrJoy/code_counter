@@ -2,7 +2,7 @@ require 'pathname'
 require 'set'
 
 module CodeCounter
-  class Engine #:nodoc:
+  class Engine
     STATS_DIRECTORIES = []
     TEST_TYPES = []
 

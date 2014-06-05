@@ -6,6 +6,7 @@
 * Correct email address in `README.md` and `code_statistics.gemspec`.
 * Switch to secure RubyGems URL.
 * Rename gem to `code_counter` so it can be published to RubyGems.
+* Improve documentation generation.
 
 ## v0.3.0
 
