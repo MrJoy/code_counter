@@ -53,5 +53,5 @@ task :new_stats => :code_statistics
 
 ## Copyright
 
-Copyright (c) 2012 Cloudability Inc.
-Distributed under the MIT licnese.  See LICENSE for details.
+Distributed under the MIT license.  See LICENSE for details, including
+authorship/ownership.
