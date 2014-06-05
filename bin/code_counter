@@ -11,9 +11,9 @@ if ENV['ADDITIONAL_SOURCE_DIRECTORIES']
 end
 
 if ENV['IGNORE_FILE_GLOBS']
-  user_ignored_dirs = ENV['IGNORE_FILE_GLOBS'].split(',')
+  user_ignored_globs = ENV['IGNORE_FILE_GLOBS'].split(',')
 else
-  user_ignored_dirs = []
+  user_ignored_globs = []
 end
 
-puts CodeCounter::Engine.new(user_ignored_dirs).to_s
+puts CodeCounter::Engine.new(user_ignored_globs).to_s
