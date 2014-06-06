@@ -18,6 +18,7 @@ require 'set'
 DEVELOPMENT_GROUPS||=[:development, :test, :cli]
 RUNTIME_GROUPS||=Set.new(Bundler.definition.groups - DEVELOPMENT_GROUPS)
 Jeweler::Tasks.new do |gem|
+  gem.version = CodeStatistics::VERSION
   gem.name = "code_statistics"
   gem.summary = %Q{Making a gem of the normal rails rake stats method, to make it more robust and work on non rails projects}
   gem.description = %Q{This is a port of the rails 'rake stats' method so it can be made more robust and work for non rails projects. New features may eventually be added as well.}
@@ -57,7 +58,6 @@ Jeweler::Tasks.new do |gem|
     fn =~ /^\.rspec.*$/ ||
     fn =~ /^\.ruby-.*$/ ||
     fn =~ /^\.rvmrc$/ ||
-    fn =~ /^VERSION$/ ||
     fn =~ /^Gemfile(\.lock)?$/ ||
     fn =~ /^Rakefile$/
   end
@@ -84,11 +84,7 @@ task :default => :test
 
 require 'rdoc/task'
 Rake::RDocTask.new do |rdoc|
-  if File.exist?('VERSION')
-    version = File.read('VERSION')
-  else
-    version = ""
-  end
+  version = CodeStatistics::VERSION
 
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title = "code_statistics #{version}"
