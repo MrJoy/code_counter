@@ -1,7 +1,7 @@
 # code_counter
 
-[![Code Climate](https://codeclimate.com/github/MrJoy/code_statistics.png)](https://codeclimate.com/github/MrJoy/code_statistics)
-[![Coverage](https://codeclimate.com/github/MrJoy/code_statistics/coverage.png)](https://codeclimate.com/github/MrJoy/code_statistics)
+[![Code Climate](https://codeclimate.com/github/MrJoy/code_counter.png)](https://codeclimate.com/github/MrJoy/code_counter)
+[![Coverage](https://codeclimate.com/github/MrJoy/code_counter/coverage.png)](https://codeclimate.com/github/MrJoy/code_counter)
 
 This started as an extraction of the Rails `rake stat` task, so it could be
 used on non-Rails projects and have it's features slowly expanded.
