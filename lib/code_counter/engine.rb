@@ -135,12 +135,7 @@ module CodeCounter
           next if ignore_file?(file_path)
 
           # First, check if a file with an unknown extension is binary...
-          unless is_expected_ext
-            magic_word = File.open(file_path, "r", { :encoding => "ASCII-8BIT" }) do |fh|
-              fh.read(2)
-            end
-            next unless magic_word == '#!'
-          end
+          next unless is_expected_ext || is_shell_program?(file_path)
 
           # Now, go ahead and analyze the file.
           File.open(file_path) do |fh|
@@ -155,6 +150,13 @@ module CodeCounter
       end
 
       return stats
+    end
+
+    def is_shell_program?(path)
+      magic_word = File.open(path, "r", { :encoding => "ASCII-8BIT" }) do |fh|
+        fh.read(2)
+      end
+      return magic_word == '#!'
     end
 
     def calculate_total
