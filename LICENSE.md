@@ -1,8 +1,12 @@
-Copyright (c) 2009, 2010 Devver
-Copyright (c) 2012 Cloudability Inc
-Copyright (c) 2014 Jon Frisby
+# License
 
-The MIT License
+## Ownership
+
+* Copyright (c) 2009, 2010 Devver
+* Copyright (c) 2012 Cloudability Inc
+* Copyright (c) 2014 Jon Frisby
+
+## The MIT License
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

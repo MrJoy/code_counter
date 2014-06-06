@@ -92,6 +92,5 @@ Rake::RDocTask.new do |rdoc|
   rdoc.title = "code_counter #{version}"
   rdoc.main = 'README.md'
   rdoc.rdoc_files.include('*.md')
-  rdoc.rdoc_files.include('LICENSE')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end

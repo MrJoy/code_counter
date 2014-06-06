@@ -59,5 +59,5 @@ task :new_stats => :code_counter
 
 ## Copyright
 
-Distributed under the MIT license.  See LICENSE for details, including
+Distributed under the MIT license.  See LICENSE.md for details, including
 authorship/ownership.

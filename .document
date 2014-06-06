@@ -2,4 +2,4 @@ README.md
 lib/**/*.rb
 bin/*
 CHANGELOG.md
-LICENSE
+LICENSE.md

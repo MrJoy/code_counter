@@ -17,12 +17,12 @@ Gem::Specification.new do |s|
   s.executables = ["code_counter"]
   s.extra_rdoc_files = [
     "CHANGELOG.md",
-    "LICENSE",
+    "LICENSE.md",
     "README.md"
   ]
   s.files = [
     "CHANGELOG.md",
-    "LICENSE",
+    "LICENSE.md",
     "README.md",
     "bin/code_counter",
     "code_counter.gemspec",
