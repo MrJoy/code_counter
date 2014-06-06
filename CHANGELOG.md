@@ -13,6 +13,7 @@
 * Fix an uninitialized variable bug.
 * Paths listed in `ADDITIONAL_SOURCE_DIRECTORIES` don't need to be relative to
   the current directory anymore.
+* Add support for `.rake` files.
 
 
 ## v0.3.0

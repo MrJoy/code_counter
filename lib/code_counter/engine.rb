@@ -60,7 +60,7 @@ module CodeCounter
     ###########################################################################
     # Internals
     ###########################################################################
-    FILTER = /.*\.(rb|feature)$/
+    FILTER = /.*\.(rb|feature|rake)$/
     attr_reader :print_buffer
 
     def initialize(ignore_file_globs = [])
