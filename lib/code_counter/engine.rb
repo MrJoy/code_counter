@@ -1,6 +1,137 @@
 require 'set'
+require 'ripper'
 
 module CodeCounter
+  module Ruby
+    class TreeProcessor
+      def initialize(tree)
+        @result = process(tree)
+      end
+
+      def result
+        return @result
+      end
+
+      def check_remainder!(kind, remainder)
+        return unless remainder && !remainder.empty?
+        raise "Expected no remainder for :#{kind} node, got: #{remainder.inspect}!"
+      end
+
+      def find_program(tree)
+        term      = tree.shift
+        children  = tree.shift
+        remainder = tree
+        check_remainder!(term, remainder)
+
+        return {
+          :kind     => term,
+          :children => children.map { |child| process(child) }.compact,
+        }
+      end
+
+      def find_class_or_module(tree)
+        term      = tree.shift
+        name      = tree.shift
+        tree.shift if term == :class # Thing this class inherits from, if any.
+        children  = tree.shift
+        remainder = tree
+        check_remainder!(term, remainder)
+
+        line_numbers = (slurp(name) + slurp(children)).flatten.sort.uniq
+
+        return {
+          :kind     => term,
+          :name     => process(name),
+          :children => children.map { |node| process(node) }.compact,
+          :lines    => (line_numbers.min..line_numbers.max),
+        }
+      end
+
+      def find_method(tree)
+        term      = tree.shift
+        name      = tree.shift
+        params    = tree.shift
+        children  = tree.shift
+        remainder = tree
+        check_remainder!(term, remainder)
+
+        line_numbers = slurp(children).sort.uniq
+
+        return {
+          :kind     => term,
+          :name     => process(name),
+          :children => process(children),
+          :lines    => (line_numbers.min..line_numbers.max),
+        }
+      end
+
+      def slurp(tree)
+        return [] unless tree.kind_of?(Array)
+        remainder = tree.dup
+
+        return remainder.
+          map { |node| is_file_position?(node) ? node.first : slurp(node) }.
+          flatten.
+          compact
+      end
+
+      def is_file_position?(node)
+        return node.kind_of?(Array) &&
+               node.length == 2 &&
+               node.first.kind_of?(Integer) &&
+               node.last.kind_of?(Integer)
+      end
+
+      def find_name_chain(tree)
+        term      = tree.shift
+        children  = tree
+
+        valid_children = children.
+          map { |child| process(child) }.
+          flatten.
+          select { |child| child.kind_of?(String) }
+
+        raise "Expected name-like things in node :#{term}, got: #{children.inspect}" unless valid_children.length == children.length
+
+        return valid_children.join('::')
+      end
+
+      def find_constant(tree)
+        (term, name, position, remainder) = *tree
+
+        check_remainder!(term, remainder)
+
+        return name
+      end
+
+      def process(tree)
+        return nil if !tree || tree.kind_of?(Symbol)
+        return tree unless tree.kind_of?(Array)
+        tree = tree.dup # Don't mutate the state, lest someone up the call
+                        # chain get surprised...
+
+        case tree[0]
+        when :program
+          find_program(tree)
+        when :class, :module
+          find_class_or_module(tree)
+        when :def
+          find_method(tree)
+        when :const_path_ref, :const_ref, :var_ref
+          find_name_chain(tree)
+        when :@const, :@ident, :class_name_error
+          find_constant(tree)
+        when Array
+          processed = tree.
+            select { |node| node.kind_of?(Array) }.
+            map { |node| process(node) }.
+            compact
+          processed = processed.first if processed.length == 1
+        end
+      end
+    end
+  end
+
   class Engine
     BIN_DIRECTORIES = Set.new
     STATS_DIRECTORIES = []
@@ -123,8 +254,22 @@ module CodeCounter
       @ignore_files.include?(file_path)
     end
 
+    # Don't care about these as the line count will be the same either way,
+    # and including some of them would just make analysis a smidge more
+    # annoying.
+    TOKENS_TO_IGNORE = Set.new([
+      :on_embdoc_beg, :on_embdoc_end, :on_sp, :on_nl, :on_ignored_nl,
+    ])
+
+    # After stripping out the above, the following represent kinds of comments
+    # we may see.
+    COMMENT_TOKENS = Set.new([:on_comment, :on_embdoc])
+
     def calculate_group_statistics(directories, pattern = FILTER)
       stats = { "lines" => 0, "codelines" => 0, "classes" => 0, "methods" => 0 }
+
+      class_cache         = {}
+      module_cache        = {}
 
       directories.each do |directory|
         Dir.foreach(directory) do |file_name|
@@ -138,6 +283,78 @@ module CodeCounter
           next unless is_expected_ext || is_shell_program?(file_path)
 
           # Now, go ahead and analyze the file.
+puts "#{file_name}:"
+lines       = []
+contents    = File.read(file_path)
+in_heredoc  = false
+# sexp      = Ripper.sexp_raw(contents, file_path)
+
+Ripper.
+  lex(contents, file_path).
+  each do |((line_no, col_no), kind, token)|
+    lines[line_no-1] ||= []
+
+    # Skip whitespace and other things we don't care about in our filtered
+    # version of this data.
+    next if TOKENS_TO_IGNORE.include?(kind)
+    in_heredoc = true if kind == :on_heredoc_beg
+    next if in_heredoc || kind == :on_heredoc_end
+    in_heredoc = false
+
+    # Record tokens we DO care about, grouped by line.
+    lines[line_no-1] << {
+      :line => line_no,
+      :pos => lines[line_no-1].length,
+      :col => col_no,
+      :kind => kind,
+      :token => token,
+    }
+  end
+require 'pp'
+tree = Ripper.sexp(contents, file_path)
+pp tree
+puts "------"
+pp CodeCounter::Ruby::TreeProcessor.new(tree).result
+
+num_lines           = lines.length
+num_comment_lines   = 0
+num_inline_comments = 0
+num_blended_lines   = 0
+lines.
+  select { |line| line && line.length > 0 }.
+  each do |line|
+    comment = line.find { |token| COMMENT_TOKENS.include?(token[:kind]) }
+    if comment
+      if comment[:pos] == 0
+        # Found a whole-line comment.
+        num_comment_lines += 1
+      else
+        # Found a postfix comment.
+        num_inline_comments += 1
+      end
+    end
+
+    class_idx = keyword_index(line, 'class')
+    if class_idx
+      class_token       = line[class_idx]
+      class_name_token  = line[class_idx + 1]
+      remainder         = line[(class_idx+1)..-1]
+      semi_idx          = semicolon_index(remainder)
+      remainder         = semi_idx ? remainder[(semi_idx+1)..-1] : []
+
+      # We have something after the semicolon...
+      if remainder.length > 0
+        # TODO: Differentiate between intra-class code, and actual method defs.
+        num_blended_lines += 1
+      end
+
+      (class_cache[class_name_token[:token]] ||= Set.new) << file_path
+    end
+  end
+# puts "Lines: #{num_lines}, Comment Lines: #{num_comment_lines}, Inline Comments: #{num_inline_comments}"
+# puts "Blended Lines: #{num_blended_lines}"
+puts
+
           File.open(file_path) do |fh|
             while line = fh.gets
               stats["lines"] += 1
@@ -148,8 +365,22 @@ module CodeCounter
           end
         end
       end
+# puts "Classes: #{class_cache.keys.length}, Modules: #{module_cache.keys.length}"
+# class_cache.each do |klass, files|
+#   puts "  #{klass}: #{files.sort.join(", ")}"
+# end
 
       return stats
+    end
+
+    def keyword_index(tokens, keyword)
+      return tokens.
+        find_index { |t| t[:kind] == :on_kw && t[:token] == keyword }
+    end
+
+    def semicolon_index(tokens)
+      return tokens.
+        find_index { |t| t[:kind] == :on_semicolon }
     end
 
     def is_shell_program?(path)
