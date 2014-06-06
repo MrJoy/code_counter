@@ -1,0 +1,1 @@
+class SingleLineClass::invalid; end;
