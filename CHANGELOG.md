@@ -14,6 +14,10 @@
 * Paths listed in `ADDITIONAL_SOURCE_DIRECTORIES` don't need to be relative to
   the current directory anymore.
 * Add support for `.rake` files.
+* Add support for files with arbitrary extensions in binary directories.
+* Make `bin`, `script`, and `scripts` be binary directories by default.
+* Add `ADDITIONAL_BINARY_DIRECTORIES` var for adding binary directory mappings
+  to the CLI.
 
 
 ## v0.3.0

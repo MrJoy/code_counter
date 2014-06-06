@@ -3,6 +3,7 @@ require 'set'
 
 module CodeCounter
   class Engine
+    BIN_DIRECTORIES = Set.new
     STATS_DIRECTORIES = []
     TEST_TYPES = []
 
@@ -10,20 +11,22 @@ module CodeCounter
     # Mechanisms for configuring the behavior of this tool
     ###########################################################################
     def self.clear!
+      BIN_DIRECTORIES.clear
       STATS_DIRECTORIES.clear
       TEST_TYPES.clear
     end
 
-    def self.add_path(key, directory, recursive=true)
+    def self.add_path(key, directory, recursive=true, is_bin_dir=false)
       directory = File.expand_path(directory)
       if File.directory?(directory)
         STATS_DIRECTORIES << [key, directory]
+        BIN_DIRECTORIES << directory if is_bin_dir
         if(recursive)
           Dir.entries(directory).
             reject { |dirent| dirent =~ /^\.\.?$/ }.
             map { |dirent| File.join(directory, dirent) }.
             reject { |dirent| !File.directory?(dirent) }.
-            each { |dirent| add_path(key, dirent, recursive) }
+            each { |dirent| add_path(key, dirent, recursive, is_bin_dir) }
         end
       end
     end
@@ -42,7 +45,9 @@ module CodeCounter
       add_path("Models", "app/models")
       add_path("Views", "app/views")
       add_path("Helpers", "app/helpers")
-      add_path("Binaries", "bin")
+      add_path("Binaries", "bin", true, true)
+      add_path("Binaries", "script", true, true)
+      add_path("Binaries", "scripts", true, true)
       add_path("Libraries", "lib")
       add_path("Source", "source")
       add_path("Source", "src")
@@ -64,6 +69,7 @@ module CodeCounter
     attr_reader :print_buffer
 
     def initialize(ignore_file_globs = [])
+      @bin_dirs     = BIN_DIRECTORIES.dup
       @pairs        = STATS_DIRECTORIES.select { |pair| File.directory?(pair[1]) }
       @print_buffer = ""
       @ignore_files = collect_files_to_ignore(ignore_file_globs)
@@ -123,7 +129,8 @@ module CodeCounter
 
       directories.each do |directory|
         Dir.foreach(directory) do |file_name|
-          next unless file_name =~ pattern
+          next if file_name =~ /\A\.\.?\Z/
+          next unless @bin_dirs.include?(directory) || file_name =~ pattern
           file_path = File.join(directory, file_name)
           next if ignore_file?(file_path)
 

@@ -5,14 +5,23 @@ describe CodeCounter::Engine do
 
   PROJECT_DIR=File.expand_path(Dir.pwd)
 
-  def run_cli!(fixture, paths)
+  def run_cli!(fixture, mappings)
     cd File.join('spec', 'fixtures', fixture.to_s) do
       ENV['IGNORE_FILE_GLOBS'] = ''
       ENV['ADDITIONAL_SOURCE_DIRECTORIES'] = (
-        paths.
+        (mappings[:source] || []).
           select { |items| items.length == 2}.
           map { |(label,dir)| "#{label}:#{dir}" } +
-        paths.
+        (mappings[:source] || []).
+          select { |items| items.length == 1}.
+          map(&:first)
+      ).join(',')
+
+      ENV['ADDITIONAL_BINARY_DIRECTORIES'] = (
+        (mappings[:binaries] || []).
+          select { |items| items.length == 2}.
+          map { |(label,dir)| "#{label}:#{dir}" } +
+        (mappings[:binaries] || []).
           select { |items| items.length == 1}.
           map(&:first)
       ).join(',')
@@ -23,12 +32,15 @@ describe CodeCounter::Engine do
     end
   end
 
-  def run_lib!(fixture, paths, ignores=[])
+  def run_lib!(fixture, mappings, ignores=[])
     cd File.join('spec', 'fixtures', fixture.to_s) do
       CodeCounter::Engine.clear!
       CodeCounter::Engine.init!
-      paths.each do |(shorthand, full)|
+      (mappings[:source] || []).each do |(shorthand, full)|
         CodeCounter::Engine.add_path(shorthand, full)
+      end
+      (mappings[:binaries] || []).each do |(shorthand, full)|
+        CodeCounter::Engine.add_path(shorthand, full, true, true)
       end
 
       return CodeCounter::Engine.new(ignores).to_s
@@ -38,74 +50,79 @@ describe CodeCounter::Engine do
   let(:fixture_data) do
     {
       :simple => {
-        :mappings   => [['Libraries', 'lib']],
+        :mappings   => { :source => [['Libraries', 'lib']] },
         :dir_label  => /Libraries/,
         :code_loc   => /Code LOC: 6/,
       },
       :simple_default_labels => {
         :path       => 'simple',
-        :mappings   => [['lib']],
+        :mappings   => { :source => [['lib']] },
         :dir_label  => /Libraries/,
         :code_loc   => /Code LOC: 6/,
       },
       :controller => {
-        :mappings   => [],
+        :mappings   => { :source => [] },
         :dir_label  => /Controllers/,
         :code_loc   => /Code LOC: 3/,
       },
       :empty_subdir => {
-        :mappings   => [],
+        :mappings   => { :source => [] },
         :dir_label  => /Controllers/,
         :code_loc   => /Code LOC: 3/,
       },
       :rspec => {
-        :mappings   => [],
+        :mappings   => { :source => [] },
         :test_label => /RSpec specs/,
         :test_loc   => /Test LOC: 6/,
       },
       :rspec_subdir => {
-        :mappings   => [],
+        :mappings   => { :source => [] },
         :test_label => /RSpec specs/,
         :test_loc   => /Test LOC: 3/,
       },
       :rspec_complex => {
-        :mappings   => [],
+        :mappings   => { :source => [] },
         :test_label => /RSpec specs/,
         :test_loc   => /Test LOC: 6/,
       },
       :rspec_shallow => {
-        :mappings   => [],
+        :mappings   => { :source => [] },
         :test_label => /RSpec specs/,
         :test_loc   => /Test LOC: 3/,
       },
       :testunit_complex => {
-        :mappings   => [],
+        :mappings   => { :source => [] },
         :test_label => /Unit tests/,
         :test_loc   => /Test LOC: 6/,
       },
       :testunit_shallow => {
-        :mappings   => [],
+        :mappings   => { :source => [] },
         :test_label => /Unit tests/,
         :test_loc   => /Test LOC: 3/,
       },
       :testunit_shallow => {
-        :mappings   => [['test', File.expand_path("testunit_shallow/test")]],
+        :mappings   => { :source => [['test', File.expand_path("testunit_shallow/test")]] },
         :test_label => /Unit tests/,
         :test_loc   => /Test LOC: 3/,
       },
       :code_to_test_ratio => {
-        :mappings   => [],
+        :mappings   => { :source => [] },
         :code_loc   => /Code LOC: 12/,
         :test_loc   => /Test LOC: 6/,
         :ratio      => /Code to Test Ratio: 1:0.5/,
       },
       :code_to_test_ratio_with_ignores => {
         :path       => 'code_to_test_ratio',
-        :mappings   => [],
+        :mappings   => { :source => [] },
         :ignores    => ['app/controllers/**/*'],
         :code_loc   => /Code LOC: 9/,
         :test_loc   => /Test LOC: 6/,
         :ratio      => /Code to Test Ratio: 1:0.7/,
+      },
+      :binaries => {
+        :mappings   => { :source => [], :binaries => [['Fancy Stuff', 'special']] },
+        :dir_label  => { :simple => /Binaries/, :fancy => /Fancy/ },
+        :code_loc   => { :simple => /Code LOC: 9/, :fancy => /Code LOC: 20/ },
       },
     }
   end
@@ -283,6 +300,36 @@ describe CodeCounter::Engine do
       expect(output).to match(code_loc)
       expect(output).to match(test_loc)
       expect(output).to match(ratio)
+    end
+  end
+
+  context "Binaries" do
+    let(:fixture) { :binaries }
+
+    context "Library" do
+      it "finds files without extensions in binaries directories" do
+        output = run_lib!(path, mappings.merge(:binaries => []))
+
+        expect(output).to match(dir_label[:simple])
+        expect(output).to match(code_loc[:simple])
+      end
+    end
+
+    context "CLI" do
+      it "finds files without extensions in binaries directories" do
+        output = run_cli!(path, mappings.merge(:binaries => []))
+
+        expect(output).to match(dir_label[:simple])
+        expect(output).to match(code_loc[:simple])
+      end
+
+      it "allows mapping of binary dirs using the ADDITIONAL_BINARIES_DIRECTORY env var" do
+        output = run_cli!(path, mappings)
+
+        expect(output).to match(dir_label[:fancy])
+        expect(output).to match(code_loc[:fancy])
+      end
+
     end
   end
 end
