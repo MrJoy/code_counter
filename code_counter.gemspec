@@ -29,7 +29,8 @@ Gem::Specification.new do |s|
     "lib/code_counter.rb",
     "lib/code_counter/engine.rb",
     "lib/code_counter/rake.rb",
-    "lib/code_counter/version.rb"
+    "lib/code_counter/version.rb",
+    "lib/code_counter/cli.rb"
   ]
   s.homepage = "http://github.com/MrJoy/code_counter"
   s.licenses = ["MIT"]

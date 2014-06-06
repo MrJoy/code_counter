@@ -1,27 +1,14 @@
 #! /usr/bin/env ruby
 require File.expand_path('../../lib/code_counter/engine', __FILE__)
+require File.expand_path('../../lib/code_counter/cli', __FILE__)
 
 (ENV['ADDITIONAL_SOURCE_DIRECTORIES'] || '').split(',').each do |dir|
-  components = dir.split(/\s*:\s*/)
-  if components.length > 1
-    (label, path) = *components
-  else
-    label = path = components.first
-  end
-
-  path = Pathname.new(path).expand_path.to_s
+  (path, label) = CodeCounter::CLI.expand_labeled_path(dir)
   CodeCounter::Engine.add_path(label, path, true, false)
 end
 
 (ENV['ADDITIONAL_BINARY_DIRECTORIES'] || '').split(',').each do |dir|
-  components = dir.split(/\s*:\s*/)
-  if components.length > 1
-    (label, path) = *components
-  else
-    label = path = components.first
-  end
-
-  path = Pathname.new(path).expand_path.to_s
+  (path, label) = CodeCounter::CLI.expand_labeled_path(dir)
   CodeCounter::Engine.add_path(label, path, true, true)
 end
 
