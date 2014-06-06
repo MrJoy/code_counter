@@ -56,6 +56,7 @@ Jeweler::Tasks.new do |gem|
   gem.files.reject! do |fn|
     fn =~ /^spec\// ||
     fn =~ /^\.document$/ ||
+    fn =~ /^\.env$/ ||
     fn =~ /^\.gitignore$/ ||
     fn =~ /^\.rspec.*$/ ||
     fn =~ /^\.ruby-.*$/ ||

@@ -5,15 +5,14 @@ begin
   old_values = [$-v, $-w, $VERBOSE]
   $-v = $-w = $VERBOSE = nil
   require 'pry'
+
+  require 'dotenv'
+  Dotenv.load
+
+  require 'codeclimate-test-reporter'
+  CodeClimate::TestReporter.start
 ensure
   $-v, $-w, $VERBOSE = old_values
-end
-
-require 'simplecov'
-SimpleCov.start do
-  add_group "Bin",  "bin/.*"
-  add_group "Lib",  "lib/.*"
-  add_group "Test", "spec/.*"
 end
 
 def capture_stdout(&block)
