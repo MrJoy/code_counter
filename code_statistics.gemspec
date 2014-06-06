@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.authors = ["Jon Frisby", "Dan Mayer"]
   s.date = "2013-01-29"
   s.description = "This is a port of the rails 'rake stats' method so it can be made more robust and work for non rails projects. New features may eventually be added as well."
-  s.email = "engineering@cloudability.com"
+  s.email = "jfrisby@mrjoy.com"
   s.executables = ["code_statistics"]
   s.extra_rdoc_files = [
     "LICENSE",
@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
     "lib/code_statistics/code_statistics.rb",
     "lib/tasks/code_stats.rb"
   ]
-  s.homepage = "http://github.com/cloudability/code_statistics"
+  s.homepage = "http://github.com/MrJoy/code_statistics"
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.required_ruby_version = Gem::Requirement.new(">= 1.9.2")

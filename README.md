@@ -38,7 +38,7 @@ task :new_stats => :code_statistics
   them (line number etc)
 * reduce duplication between bin and task
 
-engineering@cloudability.com
+[jfrisby@mrjoy.com](mailto:jfrisby@mrjoy.com)
 
 ## Note on Patches/Pull Requests
 

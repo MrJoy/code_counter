@@ -22,8 +22,8 @@ Jeweler::Tasks.new do |gem|
   gem.summary = %Q{Making a gem of the normal rails rake stats method, to make it more robust and work on non rails projects}
   gem.description = %Q{This is a port of the rails 'rake stats' method so it can be made more robust and work for non rails projects. New features may eventually be added as well.}
   gem.license = "MIT"
-  gem.email = "engineering@cloudability.com"
-  gem.homepage = "http://github.com/cloudability/code_statistics"
+  gem.email = "jfrisby@mrjoy.com"
+  gem.homepage = "http://github.com/MrJoy/code_statistics"
   gem.authors = ["Jon Frisby", "Dan Mayer"]
   gem.executables = ['code_statistics']
   gem.required_ruby_version = ">= 1.9.2"
