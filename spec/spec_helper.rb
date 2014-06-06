@@ -16,6 +16,17 @@ SimpleCov.start do
   add_group "Test", "spec/.*"
 end
 
+def capture_stdout(&block)
+  original_stdout = $stdout
+  $stdout = fake = StringIO.new
+  begin
+    yield
+  ensure
+    $stdout = original_stdout
+  end
+  fake.string
+end
+
 $LOAD_PATH << File.expand_path("../../lib", __FILE__)
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration

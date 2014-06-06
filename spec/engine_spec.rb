@@ -5,6 +5,24 @@ describe CodeCounter::Engine do
 
   PROJECT_DIR=File.expand_path(Dir.pwd)
 
+  def run_cli!(fixture, paths)
+    cd File.join('spec', 'fixtures', fixture.to_s) do
+      ENV['IGNORE_FILE_GLOBS'] = ''
+      ENV['ADDITIONAL_SOURCE_DIRECTORIES'] = (
+        paths.
+          select { |items| items.length == 2}.
+          map { |(label,dir)| "#{label}:#{dir}" } +
+        paths.
+          select { |items| items.length == 1}.
+          map(&:first)
+      ).join(',')
+
+      CodeCounter::Engine.clear!
+      CodeCounter::Engine.init!
+      return capture_stdout { load "#{PROJECT_DIR}/bin/code_counter" }
+    end
+  end
+
   def run_lib!(fixture, paths, ignores=[])
     cd File.join('spec', 'fixtures', fixture.to_s) do
       CodeCounter::Engine.clear!
@@ -106,6 +124,28 @@ describe CodeCounter::Engine do
     describe "Library" do
       it "finds passed-in directories" do
         output = run_lib!(path, mappings)
+
+        expect(output).to match(dir_label)
+        expect(output).to match(code_loc)
+      end
+    end
+
+    context "CLI" do
+      it "finds directories specified with ADDITIONAL_SOURCE_DIRECTORIES env var, and labels them as specified" do
+        output = run_cli!(path, mappings)
+
+        expect(output).to match(dir_label)
+        expect(output).to match(code_loc)
+      end
+    end
+  end
+
+  context "Simple Fixture with Default Directory Mapping" do
+    context "CLI" do
+      let(:fixture) { :simple_default_labels }
+
+      it "finds directories specified with ADDITIONAL_SOURCE_DIRECTORIES env var, and labels them using default mappings if no label is given" do
+        output = run_cli!(path, mappings)
 
         expect(output).to match(dir_label)
         expect(output).to match(code_loc)

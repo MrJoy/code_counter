@@ -9,6 +9,7 @@
 * Improve documentation generation.
 * Remove use of `test-construct` in favor of simpler fixture directories.
 * Switch to `rspec`.
+* Begin adding tests for CLI.
 
 
 ## v0.3.0
