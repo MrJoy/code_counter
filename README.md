@@ -90,6 +90,7 @@ Additionally, you can configure things using some environment variables:
     * JS
     * CoffeeScript
 * don't accidentally count __actual__ binaries
+* Include `Rakefile*` in analysis
 
 [jfrisby@mrjoy.com](mailto:jfrisby@mrjoy.com)
 
