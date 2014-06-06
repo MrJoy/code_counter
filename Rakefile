@@ -54,7 +54,7 @@ Jeweler::Tasks.new do |gem|
   end
 
   gem.files.reject! do |fn|
-    fn =~ /^test\// ||
+    fn =~ /^spec\// ||
     fn =~ /^\.document$/ ||
     fn =~ /^\.gitignore$/ ||
     fn =~ /^\.rspec.*$/ ||
@@ -64,25 +64,6 @@ Jeweler::Tasks.new do |gem|
     fn =~ /^Rakefile$/
   end
 end
-
-require 'rake/testtask'
-Rake::TestTask.new(:test) do |test|
-  test.libs << 'test'
-  test.pattern = 'test/**/*_test.rb'
-  test.verbose = true
-  test.ruby_opts = ["-rtest_helper"]
-end
-
-namespace :test do
-  desc "Run test suite with coverage analysis."
-  task :coverage do
-    ENV['USING_COVERAGE']='1'
-    Rake::Task[:test].invoke
-  end
-end
-
-
-task :default => :test
 
 require 'rdoc/task'
 Rake::RDocTask.new do |rdoc|

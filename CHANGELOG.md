@@ -7,6 +7,9 @@
 * Switch to secure RubyGems URL.
 * Rename gem to `code_counter` so it can be published to RubyGems.
 * Improve documentation generation.
+* Remove use of `test-construct` in favor of simpler fixture directories.
+* Switch to `rspec`.
+
 
 ## v0.3.0
 
