@@ -4,6 +4,7 @@
 
 * Add CodeClimate badge to `README.md`.
 * Correct email address in `README.md` and `code_statistics.gemspec`.
+* Switch to secure RubyGems URL.
 
 ## v0.3.0
 
