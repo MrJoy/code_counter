@@ -109,7 +109,7 @@ describe CodeCounter::Engine do
         :mappings   => { :source => [] },
         :code_loc   => /Code LOC: 12/,
         :test_loc   => /Test LOC: 6/,
-        :ratio      => /Code to Test Ratio: 1:0.5/,
+        :ct_ratio    => /Code to Test Ratio: 1:0.5/,
       },
       :code_to_test_ratio_with_ignores => {
         :path       => 'code_to_test_ratio',
@@ -117,13 +117,18 @@ describe CodeCounter::Engine do
         :ignores    => ['app/controllers/**/*'],
         :code_loc   => /Code LOC: 9/,
         :test_loc   => /Test LOC: 6/,
-        :ratio      => /Code to Test Ratio: 1:0.7/,
+        :ct_ratio    => /Code to Test Ratio: 1:0.7/,
       },
       :binaries => {
         :mappings   => { :source => [], :binaries => [['Fancy Stuff', 'special']] },
         :dir_label  => { :simple => /Binaries/, :fancy => /Fancy/ },
         :code_loc   => { :simple => /Code LOC: 9/, :fancy => /Code LOC: 20/ },
       },
+      :syntax_corner_cases => {
+        :mappings   => {},
+        :code_loc   => /Code LOC: 6/,
+        :lm_ratio   => /Libraries.*\| +0 \|$/,
+      }
     }
   end
   let(:mappings)    { fixture_data[fixture][:mappings] }
@@ -132,7 +137,8 @@ describe CodeCounter::Engine do
   let(:test_label)  { fixture_data[fixture][:test_label] }
   let(:code_loc)    { fixture_data[fixture][:code_loc] }
   let(:test_loc)    { fixture_data[fixture][:test_loc] }
-  let(:ratio)       { fixture_data[fixture][:ratio] }
+  let(:ct_ratio)    { fixture_data[fixture][:ct_ratio] }
+  let(:lm_ratio)    { fixture_data[fixture][:lm_ratio] }
   let(:path)        { fixture_data[fixture][:path] || fixture.to_s }
 
   context "Simple Fixture with Named Directory Mapping" do
@@ -287,7 +293,7 @@ describe CodeCounter::Engine do
 
       expect(output).to match(code_loc)
       expect(output).to match(test_loc)
-      expect(output).to match(ratio)
+      expect(output).to match(ct_ratio)
     end
   end
 
@@ -299,7 +305,7 @@ describe CodeCounter::Engine do
 
       expect(output).to match(code_loc)
       expect(output).to match(test_loc)
-      expect(output).to match(ratio)
+      expect(output).to match(ct_ratio)
     end
   end
 
@@ -330,6 +336,28 @@ describe CodeCounter::Engine do
         expect(output).to match(code_loc[:fancy])
       end
 
+    end
+  end
+
+  context "Syntax Corner Cases" do
+    let(:fixture) { :syntax_corner_cases }
+
+    context "Library" do
+      it "correctly handles single-line class defs, modules, multiple classes per file, etc" do
+        output = run_lib!(path, mappings)
+
+        expect(output).to match(code_loc)
+        expect(output).to match(lm_ratio)
+      end
+    end
+
+    context "CLI" do
+      it "correctly handles single-line class defs, modules, multiple classes per file, etc" do
+        output = run_cli!(path, mappings)
+
+        expect(output).to match(code_loc)
+        expect(output).to match(lm_ratio)
+      end
     end
   end
 end
