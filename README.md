@@ -1,5 +1,7 @@
 # code_counter
 
+[![Code Climate](https://codeclimate.com/github/MrJoy/code_statistics.png)](https://codeclimate.com/github/MrJoy/code_statistics)
+
 This is a port of the rails 'rake stat' so it can be used on none rails
 projects and have it's features slowly expanded. Please feel free to contact us
 if you have any ideas for additional stats that should be added. It in general
