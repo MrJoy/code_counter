@@ -92,6 +92,7 @@ Additionally, you can configure things using some environment variables:
 * support for more languages
     * JS
     * CoffeeScript
+    * Gherkin
 * don't accidentally count __actual__ binaries
 * Include `Rakefile*` in analysis
 
