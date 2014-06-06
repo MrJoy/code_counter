@@ -121,7 +121,7 @@ module CodeCounter
     end
 
     def ignore_file?(file_path)
-      @ignore_files.include?(File.expand_path(file_path))
+      @ignore_files.include?(file_path)
     end
 
     def calculate_group_statistics(directories, pattern = FILTER)
@@ -132,7 +132,7 @@ module CodeCounter
           next if file_name =~ /\A\.\.?\Z/
           is_expected_ext = file_name =~ pattern
           next unless @bin_dirs.include?(directory) || is_expected_ext
-          file_path = File.join(directory, file_name)
+          file_path = File.expand_path(File.join(directory, file_name))
           next if ignore_file?(file_path)
 
           # First, check if a file with an unknown extension is binary...
