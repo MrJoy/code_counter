@@ -193,7 +193,7 @@ module CodeCounter
     end
 
     def print_line(name, stats)
-      return if stats['lines'] != 0
+      return if stats['lines'] == 0
 
       # Ugly hack for subtracting out class/end.  >.<
       loc_over_m  = x_over_y(stats["codelines"], stats["methods"])
