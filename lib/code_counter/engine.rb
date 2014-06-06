@@ -186,22 +186,18 @@ module CodeCounter
     end
 
     def x_over_y(top, bottom)
-      result = (top / bottom) rescue result = 0
+      return (bottom > 0) ? (top / bottom) : 0
     end
 
     def print_line(name, statistics)
-      m_over_c = x_over_y(statistics["methods"], statistics["classes"])
-      loc_over_m = x_over_y(statistics["codelines"], statistics["methods"])
-      loc_over_m = loc_over_m - 2 if loc_over_m >= 2
+      m_over_c    = x_over_y(statistics["methods"], statistics["classes"])
+      loc_over_m  = x_over_y(statistics["codelines"], statistics["methods"])
+      # Ugly hack for subtracting out class/end.  >.<
+      loc_over_m -= 2 if loc_over_m >= 2
 
-      start = if TEST_TYPES.include? name
-                "| #{name.ljust(20)} "
-              else
-                "| #{name.ljust(20)} "
-              end
-
-      if (statistics['lines']!=0)
-        @print_buffer << start +
+      if statistics['lines'] != 0
+        @print_buffer <<
+          "| #{name.ljust(20)} " +
           "| #{statistics["lines"].to_s.rjust(5)} " +
           "| #{statistics["codelines"].to_s.rjust(5)} " +
           "| #{statistics["classes"].to_s.rjust(7)} " +
