@@ -10,6 +10,7 @@
 * Remove use of `test-construct` in favor of simpler fixture directories.
 * Switch to `rspec`.
 * Begin adding tests for CLI.
+* Fix an uninitialized variable bug.
 
 
 ## v0.3.0

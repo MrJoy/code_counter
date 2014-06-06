@@ -71,7 +71,7 @@ module CodeCounter
       @pairs = coalesce_pairs(@pairs)
 
       @statistics  = calculate_statistics
-      @total       = calculate_total if @pairs.length > 1
+      @total       = (@pairs.length > 1) ? calculate_total : nil
     end
 
     def coalesce_pairs(pairs)
