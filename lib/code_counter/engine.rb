@@ -168,21 +168,20 @@ module CodeCounter
       type_loc
     end
 
+    COL_WIDTHS      = [[22,-1], [7,1], [7,1], [9,1], [9,1], [5,1], [7,1]]
+    HEADER_PATTERN  = "|" + COL_WIDTHS.map { |(w,_)| "%-#{w}s" }.join('|') + "|\n"
+    ROW_PATTERN     = "|" + COL_WIDTHS.map { |(w,d)| "%#{w*d}s" }.join('|') + "|\n"
+    HEADERS         = ["Name", "Lines", "LOC", "Classes", "Methods", "M/C", "LOC/M"]
+    SPLITTER        = HEADER_PATTERN % COL_WIDTHS.map { |(w,_)| '-' * w }
+
     def print_header
       print_splitter
-      @print_buffer << "| Name".ljust(22)+" "+
-        "| Lines".ljust(8)+
-        "| LOC".ljust(8)+
-        "| Classes".ljust(10)+
-        "| Methods".ljust(10)+
-        "| M/C".ljust(6)+
-        "| LOC/M".ljust(6)+
-        " |\n"
+      @print_buffer << HEADER_PATTERN % HEADERS.map { |h| " #{h} " }
       print_splitter
     end
 
     def print_splitter
-      @print_buffer << "+----------------------+-------+-------+---------+---------+-----+-------+\n"
+      @print_buffer << SPLITTER
     end
 
     def x_over_y(top, bottom)
@@ -196,14 +195,15 @@ module CodeCounter
       loc_over_m -= 2 if loc_over_m >= 2
 
       if statistics['lines'] != 0
-        @print_buffer <<
-          "| #{name.ljust(20)} " +
-          "| #{statistics["lines"].to_s.rjust(5)} " +
-          "| #{statistics["codelines"].to_s.rjust(5)} " +
-          "| #{statistics["classes"].to_s.rjust(7)} " +
-          "| #{statistics["methods"].to_s.rjust(7)} " +
-          "| #{m_over_c.to_s.rjust(3)} " +
-          "| #{loc_over_m.to_s.rjust(5)} |\n"
+        @print_buffer << ROW_PATTERN % [
+          name,
+          statistics["lines"],
+          statistics["codelines"],
+          statistics["classes"],
+          statistics["methods"],
+          m_over_c,
+          loc_over_m,
+        ].map(&:to_s).map { |v| " #{v} " }
       end
     end
 
