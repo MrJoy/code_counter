@@ -55,6 +55,7 @@ Jeweler::Tasks.new do |gem|
     fn =~ /^\.document$/ ||
     fn =~ /^\.gitignore$/ ||
     fn =~ /^\.rspec.*$/ ||
+    fn =~ /^\.ruby-.*$/ ||
     fn =~ /^\.rvmrc$/ ||
     fn =~ /^VERSION$/ ||
     fn =~ /^Gemfile(\.lock)?$/ ||
