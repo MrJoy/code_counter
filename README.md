@@ -1,13 +1,17 @@
 # code_counter
 
-[![Code Climate](https://codeclimate.com/github/MrJoy/code_statistics.png)](https://codeclimate.com/github/MrJoy/code_statistics)
+[![Code Climate](https://codeclimate.com/github/MrJoy/code_counter.png)](https://codeclimate.com/github/MrJoy/code_counter)
+[![Coverage](https://codeclimate.com/github/MrJoy/code_counter/coverage.png)](https://codeclimate.com/github/MrJoy/code_counter)
 
-This is a port of the rails 'rake stat' so it can be used on none rails
-projects and have it's features slowly expanded. Please feel free to contact us
-if you have any ideas for additional stats that should be added. It in general
-tries to have defaults that work better for both rails and non rails projects.
-It specifically supports cucumber tests and rspec better than the original
-rails stats.
+This started as an extraction of the Rails `rake stat` task, so it could be
+used on non-Rails projects and have it's features slowly expanded.
+
+Improvements include:
+
+* Support for RSpec and Cucumber out of the box.
+* Includes `.rake` files.
+* Includes scripts (by default, in `bin/`, `script/`, and `scripts/`) with no
+  extension, provided they have a shebang line.
 
 
 ## Requirements
@@ -88,7 +92,9 @@ Additionally, you can configure things using some environment variables:
 * support for more languages
     * JS
     * CoffeeScript
+    * Gherkin
 * don't accidentally count __actual__ binaries
+* Include `Rakefile*` in analysis
 
 [jfrisby@mrjoy.com](mailto:jfrisby@mrjoy.com)
 

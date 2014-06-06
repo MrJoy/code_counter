@@ -1,4 +1,5 @@
 require 'set'
+require 'pathname'
 require 'ripper'
 
 module CodeCounter
@@ -254,6 +255,10 @@ module CodeCounter
       @ignore_files.include?(file_path)
     end
 
+    def blank_stats
+      return { "lines" => 0, "codelines" => 0, "classes" => 0, "methods" => 0 }.dup
+    end
+
     # Don't care about these as the line count will be the same either way,
     # and including some of them would just make analysis a smidge more
     # annoying.
@@ -266,31 +271,25 @@ module CodeCounter
     COMMENT_TOKENS = Set.new([:on_comment, :on_embdoc])
 
     def calculate_group_statistics(directories, pattern = FILTER)
-      stats = { "lines" => 0, "codelines" => 0, "classes" => 0, "methods" => 0 }
+      stats = blank_stats
 
       class_cache         = {}
       module_cache        = {}
 
       directories.each do |directory|
-        Dir.foreach(directory) do |file_name|
-          next if file_name =~ /\A\.\.?\Z/
-          is_expected_ext = file_name =~ pattern
-          next unless @bin_dirs.include?(directory) || is_expected_ext
-          file_path = File.expand_path(File.join(directory, file_name))
-          next if ignore_file?(file_path)
-
-          # First, check if a file with an unknown extension is binary...
-          next unless is_expected_ext || is_shell_program?(file_path)
+        Dir.foreach(directory) do |file|
+          path = Pathname.new(File.join(directory, file))
+          next unless is_elligible_file?(path, pattern)
 
           # Now, go ahead and analyze the file.
-puts "#{file_name}:"
+puts "#{file}:"
 lines       = []
-contents    = File.read(file_path)
+contents    = File.read(path)
 in_heredoc  = false
 # sexp      = Ripper.sexp_raw(contents, file_path)
 
 Ripper.
-  lex(contents, file_path).
+  lex(contents, path.to_s).
   each do |((line_no, col_no), kind, token)|
     lines[line_no-1] ||= []
 
@@ -311,7 +310,7 @@ Ripper.
     }
   end
 require 'pp'
-tree = Ripper.sexp(contents, file_path)
+tree = Ripper.sexp(contents, path.to_s)
 pp tree
 puts "------"
 pp CodeCounter::Ruby::TreeProcessor.new(tree).result
@@ -348,14 +347,14 @@ lines.
         num_blended_lines += 1
       end
 
-      (class_cache[class_name_token[:token]] ||= Set.new) << file_path
+      (class_cache[class_name_token[:token]] ||= Set.new) << path
     end
   end
 # puts "Lines: #{num_lines}, Comment Lines: #{num_comment_lines}, Inline Comments: #{num_inline_comments}"
 # puts "Blended Lines: #{num_blended_lines}"
 puts
 
-          File.open(file_path) do |fh|
+          File.open(path) do |fh|
             while line = fh.gets
               stats["lines"] += 1
               stats["classes"] += 1 if line =~ /class [A-Z]/
@@ -383,6 +382,25 @@ puts
         find_index { |t| t[:kind] == :on_semicolon }
     end
 
+    def is_elligible_file?(path, pattern)
+      basename        = path.basename.to_s
+      dirname         = path.dirname.to_s
+
+      is_special_dir  = basename =~ /\A\.\.?\Z/
+      is_expected_ext = basename =~ pattern
+      is_ignored      = ignore_file?(path.to_s)
+      is_bin_dir      = @bin_dirs.include?(dirname)
+
+      return false if is_special_dir ||
+                      is_ignored ||
+                      (!is_expected_ext && is_bin_dir && !is_shell_program?(path)) ||
+                      (!is_expected_ext && !is_bin_dir)
+
+      return true
+    end
+
+    # Make a stab at determining if the file specifief is a shell program by
+    # seeing if it has a shebang line.
     def is_shell_program?(path)
       magic_word = File.open(path, "r", { :encoding => "ASCII-8BIT" }) do |fh|
         fh.read(2)
@@ -391,7 +409,7 @@ puts
     end
 
     def calculate_total
-      total = { "lines" => 0, "codelines" => 0, "classes" => 0, "methods" => 0 }
+      total = blank_stats
       @statistics.each_value { |pair| pair.each { |k, v| total[k] += v } }
       total
     end
@@ -453,14 +471,10 @@ puts
     end
 
     def print_code_test_stats
-      code = calculate_code
+      code  = calculate_code
       tests = calculate_tests
+      ratio = (code != 0) ? "#{sprintf("%.1f", tests.to_f/code)}" : "0.0"
 
-      ratio = if code!=0
-        "#{sprintf("%.1f", tests.to_f/code)}"
-      else
-        "0.0"
-      end
       @print_buffer << " Code LOC: #{code}  Test LOC: #{tests}  Code to Test Ratio: 1:#{ratio}\n"
       @print_buffer << "\n"
     end
