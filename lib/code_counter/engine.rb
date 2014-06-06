@@ -169,14 +169,18 @@ module CodeCounter
     end
 
     COL_WIDTHS      = [[22,-1], [7,1], [7,1], [9,1], [9,1], [5,1], [7,1]]
-    HEADER_PATTERN  = "|" + COL_WIDTHS.map { |(w,_)| "%-#{w}s" }.join('|') + "|\n"
-    ROW_PATTERN     = "|" + COL_WIDTHS.map { |(w,d)| "%#{w*d}s" }.join('|') + "|\n"
-    HEADERS         = ["Name", "Lines", "LOC", "Classes", "Methods", "M/C", "LOC/M"]
+    HEADER_PATTERN  = '|' + COL_WIDTHS.map { |(w,_)| "%-#{w}s" }.join('|') + "|\n"
+    ROW_PATTERN     = '|' + COL_WIDTHS.map { |(w,d)| "%#{w*d}s" }.join('|') + "|\n"
+    HEADERS         = ['Name', 'Lines', 'LOC', 'Classes', 'Methods', 'M/C', 'LOC/M']
     SPLITTER        = HEADER_PATTERN % COL_WIDTHS.map { |(w,_)| '-' * w }
+
+    def pad_elements(list)
+      return list.map { |e| " #{e} " }
+    end
 
     def print_header
       print_splitter
-      @print_buffer << HEADER_PATTERN % HEADERS.map { |h| " #{h} " }
+      @print_buffer << HEADER_PATTERN % pad_elements(HEADERS)
       print_splitter
     end
 
@@ -188,22 +192,22 @@ module CodeCounter
       return (bottom > 0) ? (top / bottom) : 0
     end
 
-    def print_line(name, statistics)
-      m_over_c    = x_over_y(statistics["methods"], statistics["classes"])
-      loc_over_m  = x_over_y(statistics["codelines"], statistics["methods"])
+    def print_line(name, stats)
+      m_over_c    = x_over_y(stats["methods"], stats["classes"])
+      loc_over_m  = x_over_y(stats["codelines"], stats["methods"])
       # Ugly hack for subtracting out class/end.  >.<
       loc_over_m -= 2 if loc_over_m >= 2
 
       if statistics['lines'] != 0
-        @print_buffer << ROW_PATTERN % [
+        @print_buffer << ROW_PATTERN % pad_elements([
           name,
-          statistics["lines"],
-          statistics["codelines"],
-          statistics["classes"],
-          statistics["methods"],
+          stats['lines'],
+          stats['codelines'],
+          stats['classes'],
+          stats['methods'],
           m_over_c,
           loc_over_m,
-        ].map(&:to_s).map { |v| " #{v} " }
+        ])
       end
     end
 
