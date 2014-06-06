@@ -1,11 +1,11 @@
 #! /usr/bin/env ruby
-require File.expand_path('../../lib/code_statistics/code_statistics', __FILE__)
+require File.expand_path('../../lib/code_counter/engine', __FILE__)
 
 if ENV['ADDITIONAL_SOURCE_DIRECTORIES']
   user_defined_dirs = ENV['ADDITIONAL_SOURCE_DIRECTORIES'].split(',')
   user_defined_dirs.each do |dir|
     if File.directory?(dir)
-      CodeStatistics::CodeStatistics.add_path(dir, File.expand_path("#{Dir.pwd}/#{dir}"))
+      CodeCounter::Engine.add_path(dir, File.expand_path("#{Dir.pwd}/#{dir}"))
     end
   end
 end
@@ -16,4 +16,4 @@ else
   user_ignored_dirs = []
 end
 
-puts CodeStatistics::CodeStatistics.new(user_ignored_dirs).to_s
+puts CodeCounter::Engine.new(user_ignored_dirs).to_s

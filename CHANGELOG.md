@@ -5,6 +5,7 @@
 * Add CodeClimate badge to `README.md`.
 * Correct email address in `README.md` and `code_statistics.gemspec`.
 * Switch to secure RubyGems URL.
+* Rename gem to `code_counter` so it can be published to RubyGems.
 
 ## v0.3.0
 

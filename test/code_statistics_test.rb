@@ -1,14 +1,14 @@
-class CodeStatisticsTest < Test::Unit::TestCase
+class CodeCounterEngineTest < Test::Unit::TestCase
 
   include Construct::Helpers
 
   def setup_code_stats!(paths, ignores)
-    CodeStatistics::CodeStatistics.clear!
-    CodeStatistics::CodeStatistics.init!
+    CodeCounter::Engine.clear!
+    CodeCounter::Engine.init!
     paths.each do |pair|
-      CodeStatistics::CodeStatistics.add_path(pair.first, pair.last)
+      CodeCounter::Engine.add_path(pair.first, pair.last)
     end
-    @code_stats = CodeStatistics::CodeStatistics.new(ignores)
+    @code_stats = CodeCounter::Engine.new(ignores)
   end
 
   should "find passed in directory" do

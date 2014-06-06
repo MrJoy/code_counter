@@ -1,4 +1,4 @@
-# code_statistics
+# code_counter
 
 This is a port of the rails 'rake stat' so it can be used on none rails
 projects and have it's features slowly expanded. Please feel free to contact us
@@ -18,16 +18,16 @@ This project requires Ruby 1.9.x or higher.
 Add this to the bottom of your `Rakefile`:
 
 ```ruby
-require 'code_statistics'
+require 'code_counter'
 ```
 
 Then, when you run `rake -T` you'll see a stats task, unless you already had
 one defined.  If you have an existing task named `stats`, and want to use this
-one, simply make a task of a new name that depends on the `code_statistic`
+one, simply make a task of a new name that depends on the `code_counter`
 task, like so:
 
 ```ruby
-task :new_stats => :code_statistics
+task :new_stats => :code_counter
 ```
 
 

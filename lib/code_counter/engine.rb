@@ -1,8 +1,8 @@
 require 'pathname'
 require 'set'
 
-module CodeStatistics
-  class CodeStatistics #:nodoc:
+module CodeCounter
+  class Engine #:nodoc:
     STATS_DIRECTORIES = []
     TEST_TYPES = []
 

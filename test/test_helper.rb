@@ -10,7 +10,7 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 require_relative './support/simplecov'
 
-require 'code_statistics/code_statistics'
+require 'code_counter/engine'
 
 class Test::Unit::TestCase
 end
