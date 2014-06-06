@@ -1,4 +1,5 @@
 require 'set'
+require 'pathname'
 
 module CodeCounter
   class Engine
@@ -123,22 +124,20 @@ module CodeCounter
       @ignore_files.include?(file_path)
     end
 
+    def blank_stats
+      return { "lines" => 0, "codelines" => 0, "classes" => 0, "methods" => 0 }.dup
+    end
+
     def calculate_group_statistics(directories, pattern = FILTER)
-      stats = { "lines" => 0, "codelines" => 0, "classes" => 0, "methods" => 0 }
+      stats = blank_stats
 
       directories.each do |directory|
-        Dir.foreach(directory) do |file_name|
-          next if file_name =~ /\A\.\.?\Z/
-          is_expected_ext = file_name =~ pattern
-          next unless @bin_dirs.include?(directory) || is_expected_ext
-          file_path = File.expand_path(File.join(directory, file_name))
-          next if ignore_file?(file_path)
-
-          # First, check if a file with an unknown extension is binary...
-          next unless is_expected_ext || is_shell_program?(file_path)
+        Dir.foreach(directory) do |file|
+          path = Pathname.new(File.join(directory, file))
+          next unless is_elligible_file?(path, pattern)
 
           # Now, go ahead and analyze the file.
-          File.open(file_path) do |fh|
+          File.open(path) do |fh|
             while line = fh.gets
               stats["lines"] += 1
               stats["classes"] += 1 if line =~ /class [A-Z]/
@@ -152,6 +151,25 @@ module CodeCounter
       return stats
     end
 
+    def is_elligible_file?(path, pattern)
+      basename        = path.basename.to_s
+      dirname         = path.dirname.to_s
+
+      is_special_dir  = basename =~ /\A\.\.?\Z/
+      is_expected_ext = basename =~ pattern
+      is_ignored      = ignore_file?(path.to_s)
+      is_bin_dir      = @bin_dirs.include?(dirname)
+
+      return false if is_special_dir ||
+                      is_ignored ||
+                      (!is_expected_ext && is_bin_dir && !is_shell_program?(path)) ||
+                      (!is_expected_ext && !is_bin_dir)
+
+      return true
+    end
+
+    # Make a stab at determining if the file specifief is a shell program by
+    # seeing if it has a shebang line.
     def is_shell_program?(path)
       magic_word = File.open(path, "r", { :encoding => "ASCII-8BIT" }) do |fh|
         fh.read(2)
@@ -160,7 +178,7 @@ module CodeCounter
     end
 
     def calculate_total
-      total = { "lines" => 0, "codelines" => 0, "classes" => 0, "methods" => 0 }
+      total = blank_stats
       @statistics.each_value { |pair| pair.each { |k, v| total[k] += v } }
       total
     end
@@ -222,14 +240,10 @@ module CodeCounter
     end
 
     def print_code_test_stats
-      code = calculate_code
+      code  = calculate_code
       tests = calculate_tests
+      ratio = (code != 0) ? "#{sprintf("%.1f", tests.to_f/code)}" : "0.0"
 
-      ratio = if code!=0
-        "#{sprintf("%.1f", tests.to_f/code)}"
-      else
-        "0.0"
-      end
       @print_buffer << " Code LOC: #{code}  Test LOC: #{tests}  Code to Test Ratio: 1:#{ratio}\n"
       @print_buffer << "\n"
     end
