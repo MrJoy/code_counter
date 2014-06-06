@@ -5,7 +5,7 @@ module CodeCounter
   class Engine
     BIN_DIRECTORIES = Set.new
     STATS_DIRECTORIES = []
-    TEST_TYPES = []
+    TEST_TYPES = Set.new
 
     ###########################################################################
     # Mechanisms for configuring the behavior of this tool
