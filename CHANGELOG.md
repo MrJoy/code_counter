@@ -1,5 +1,10 @@
 # Changes
 
+## v0.3.1
+
+* Add CodeClimate badge to `README.md`.
+* Correct email address in `README.md` and `code_statistics.gemspec`.
+
 ## v0.3.0
 
 * Modernize project to work well with newer Rake, and in the world of Bundler.
