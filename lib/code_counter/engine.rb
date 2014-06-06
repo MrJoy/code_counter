@@ -130,10 +130,20 @@ module CodeCounter
       directories.each do |directory|
         Dir.foreach(directory) do |file_name|
           next if file_name =~ /\A\.\.?\Z/
-          next unless @bin_dirs.include?(directory) || file_name =~ pattern
+          is_expected_ext = file_name =~ pattern
+          next unless @bin_dirs.include?(directory) || is_expected_ext
           file_path = File.join(directory, file_name)
           next if ignore_file?(file_path)
 
+          # First, check if a file with an unknown extension is binary...
+          unless is_expected_ext
+            magic_word = File.open(file_path, "r", { :encoding => "ASCII-8BIT" }) do |fh|
+              fh.read(2)
+            end
+            next unless magic_word == '#!'
+          end
+
+          # Now, go ahead and analyze the file.
           File.open(file_path) do |fh|
             while line = fh.gets
               stats["lines"] += 1
