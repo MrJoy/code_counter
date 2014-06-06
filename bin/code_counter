@@ -10,10 +10,6 @@ if ENV['ADDITIONAL_SOURCE_DIRECTORIES']
   end
 end
 
-if ENV['IGNORE_FILE_GLOBS']
-  user_ignored_globs = ENV['IGNORE_FILE_GLOBS'].split(',')
-else
-  user_ignored_globs = []
-end
+user_ignored_globs = (ENV['IGNORE_FILE_GLOBS'] || '').split(',')
 
 puts CodeCounter::Engine.new(user_ignored_globs).to_s
