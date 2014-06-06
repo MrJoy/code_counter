@@ -4,8 +4,14 @@ require File.expand_path('../../lib/code_counter/engine', __FILE__)
 if ENV['ADDITIONAL_SOURCE_DIRECTORIES']
   user_defined_dirs = ENV['ADDITIONAL_SOURCE_DIRECTORIES'].split(',')
   user_defined_dirs.each do |dir|
-    if File.directory?(dir)
-      CodeCounter::Engine.add_path(dir, File.expand_path("#{Dir.pwd}/#{dir}"))
+    components = dir.split(/\s*:\s*/)
+    if components.length > 1
+      (label, path) = *components
+    else
+      label = path = components.first
+    end
+    if File.directory?(path)
+      CodeCounter::Engine.add_path(label, File.expand_path(File.join(Dir.pwd, path)))
     end
   end
 end
