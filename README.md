@@ -82,6 +82,11 @@ Additionally, you can configure things using some environment variables:
 * find todo, perf, bug, hack, etc comments and display them with info about
   them (line number etc)
 * reduce duplication between bin and task
+* comments:code ratio
+* support for more languages
+    * JS
+    * CoffeeScript
+* don't accidentally count __actual__ binaries
 
 [jfrisby@mrjoy.com](mailto:jfrisby@mrjoy.com)
 
