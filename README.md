@@ -15,6 +15,8 @@ This project requires Ruby 1.9.x or higher.
 
 ## Usage
 
+### Rake
+
 Add this to the bottom of your `Rakefile`:
 
 ```ruby
@@ -30,6 +32,45 @@ task, like so:
 task :new_stats => :code_counter
 ```
 
+To configure the task:
+
+```ruby
+task :stats_configuration do
+  CodeCounter::Engine.clear!
+  CodeCounter::Engine.init!
+
+  # By default, this will recursively add the specified path, and only look for
+  # files ending in `.rb`, `.rake`, or `.feature`.
+  CodeCounter::Engine.add_path("Some Group", "some/path")
+
+  # Don't add recursively:
+  CodeCounter::Engine.add_path("Some Group", "other/path", false)
+
+  # Add recursively, and don't filter by file extension:
+  CodeCounter::Engine.add_path("Some Group", "my/script/dir", true, true)
+end
+
+# Add a dependency on our config task here so that our config gets loaded when
+# we run `rake stats`.
+task :code_counter => :stats_configuration
+```
+
+
+### CLI
+
+```bash
+code_counter
+```
+
+Additionally, you can configure things using some environment variables:
+
+* `ADDITIONAL_SOURCE_DIRECTORIES`: A comma-separated list of directories to
+  scan for source files.  You may assign a directory to a named group by
+  prefixing the path with a group name and colon.  E.G. `ADDITIONAL_SOURCE_DIRECTORIES='Libraries:my_awesome_code'`
+* `ADDITIONAL_BINARY_DIRECTORIES`: A comma-separated list of directories to
+  scan for binaries.  You may assign a directory to a named group by prefixing
+  the path with a group name and colon.  E.G. `ADDITIONAL_BINARY_DIRECTORIES='Binaries:my_awesome_scripts'`
+* `IGNORE_FILE_GLOBS`: A comma-separated list of file globs to ignore.
 
 
 ## TODOs
