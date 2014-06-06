@@ -193,22 +193,21 @@ module CodeCounter
     end
 
     def print_line(name, stats)
-      m_over_c    = x_over_y(stats["methods"], stats["classes"])
-      loc_over_m  = x_over_y(stats["codelines"], stats["methods"])
+      return if stats['lines'] != 0
+
       # Ugly hack for subtracting out class/end.  >.<
+      loc_over_m  = x_over_y(stats["codelines"], stats["methods"])
       loc_over_m -= 2 if loc_over_m >= 2
 
-      if statistics['lines'] != 0
-        @print_buffer << ROW_PATTERN % pad_elements([
-          name,
-          stats['lines'],
-          stats['codelines'],
-          stats['classes'],
-          stats['methods'],
-          m_over_c,
-          loc_over_m,
-        ])
-      end
+      @print_buffer << ROW_PATTERN % pad_elements([
+        name,
+        stats['lines'],
+        stats['codelines'],
+        stats['classes'],
+        stats['methods'],
+        x_over_y(stats["methods"], stats["classes"]),
+        loc_over_m,
+      ])
     end
 
     def print_code_test_stats
