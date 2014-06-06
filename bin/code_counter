@@ -10,9 +10,7 @@ require File.expand_path('../../lib/code_counter/engine', __FILE__)
   end
 
   path = Pathname.new(path).expand_path.to_s
-  if File.directory?(path)
-    CodeCounter::Engine.add_path(label, path)
-  end
+  CodeCounter::Engine.add_path(label, path)
 end
 
 user_ignored_globs = (ENV['IGNORE_FILE_GLOBS'] || '').split(',')
