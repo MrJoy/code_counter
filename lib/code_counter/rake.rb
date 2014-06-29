@@ -7,7 +7,7 @@ if(defined?(Rake::Task))
     else
       user_ignored_dirs = []
     end
-    puts CodeCounter::Engine(user_ignored_dirs).to_s
+    puts CodeCounter::Engine.new(user_ignored_dirs).to_s
   end
 
   unless(Rake::Task.task_defined?(:stats))
