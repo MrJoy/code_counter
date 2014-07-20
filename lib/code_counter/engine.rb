@@ -16,16 +16,21 @@ module CodeCounter
       TEST_TYPES.clear
     end
 
+    def self.enumerate_directory(directory)
+      return Dir.entries(directory).
+        reject { |dirent| dirent =~ /^\.\.?$/ }.
+        map { |dirent| File.join(directory, dirent) }.
+        reject { |dirent| !File.directory?(dirent) }
+    end
+
+
     def self.add_path(key, directory, recursive=true, is_bin_dir=false)
       directory = File.expand_path(directory)
       if File.directory?(directory)
         STATS_DIRECTORIES << [key, directory]
         BIN_DIRECTORIES << directory if is_bin_dir
         if(recursive)
-          Dir.entries(directory).
-            reject { |dirent| dirent =~ /^\.\.?$/ }.
-            map { |dirent| File.join(directory, dirent) }.
-            reject { |dirent| !File.directory?(dirent) }.
+          enumerate_directory(directory).
             each { |dirent| add_path(key, dirent, recursive, is_bin_dir) }
         end
       end
