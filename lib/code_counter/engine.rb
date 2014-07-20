@@ -232,15 +232,11 @@ module CodeCounter
 
     HEADER_PATTERN  = '|' + COL_WIDTHS.map { |(w,_)| " %-#{w}s " }.join('|') + "|\n"
     ROW_PATTERN     = '|' + COL_WIDTHS.map { |(w,d)| " %#{w*d}s " }.join('|') + "|\n"
-    SPLITTER        = HEADER_PATTERN % COL_WIDTHS.map { |(w,_)| '-' * w }
-
-    def pad_elements(list)
-      return list.map { |e| " #{e} " }
-    end
+    SPLITTER        = (HEADER_PATTERN % COL_WIDTHS.map { |(w,_)| '-' * w }).gsub(/ /, '-')
 
     def print_header
       print_splitter
-      @print_buffer << HEADER_PATTERN % pad_elements(HEADERS)
+      @print_buffer << HEADER_PATTERN % HEADERS
       print_splitter
     end
 
@@ -255,7 +251,7 @@ module CodeCounter
     def print_line(name, stats)
       return if stats['lines'] == 0
 
-      @print_buffer << ROW_PATTERN % pad_elements(arrange_line_data(name, stats))
+      @print_buffer << ROW_PATTERN % arrange_line_data(name, stats)
     end
 
     def print_code_test_stats
