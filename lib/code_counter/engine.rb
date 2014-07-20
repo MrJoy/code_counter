@@ -146,7 +146,7 @@ module CodeCounter
       directories.each do |directory|
         Dir.foreach(directory) do |file|
           path = Pathname.new(File.join(directory, file))
-          next unless is_elligible_file?(path, pattern)
+          next unless is_eligible_file?(path, pattern)
 
           # Now, go ahead and analyze the file.
           File.open(path) do |fh|
@@ -163,7 +163,7 @@ module CodeCounter
       return stats
     end
 
-    def is_elligible_file?(path, pattern)
+    def is_eligible_file?(path, pattern)
       basename        = path.basename.to_s
       dirname         = path.dirname.to_s
 
