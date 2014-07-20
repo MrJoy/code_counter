@@ -257,10 +257,9 @@ module CodeCounter
     def print_code_test_stats
       code  = calculate_code
       tests = calculate_tests
-      ratio = (code != 0) ? "#{sprintf("%.1f", tests.to_f/code)}" : "0.0"
+      ratio = "%.1f" % x_over_y(tests.to_f, code)
 
-      @print_buffer << " Code LOC: #{code}  Test LOC: #{tests}  Code to Test Ratio: 1:#{ratio}\n"
-      @print_buffer << "\n"
+      @print_buffer << " Code LOC: #{code}  Test LOC: #{tests}  Code to Test Ratio: 1:#{ratio}\n\n"
     end
 
     private
