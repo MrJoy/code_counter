@@ -252,6 +252,23 @@ module CodeCounter
       return (bottom > 0) ? (top / bottom) : 0
     end
 
+    def print_line(name, stats)
+      return if stats['lines'] == 0
+
+      @print_buffer << ROW_PATTERN % pad_elements(arrange_line_data(name, stats))
+    end
+
+    def print_code_test_stats
+      code  = calculate_code
+      tests = calculate_tests
+      ratio = (code != 0) ? "#{sprintf("%.1f", tests.to_f/code)}" : "0.0"
+
+      @print_buffer << " Code LOC: #{code}  Test LOC: #{tests}  Code to Test Ratio: 1:#{ratio}\n"
+      @print_buffer << "\n"
+    end
+
+    private
+
     def compute_effective_loc_over_m(stats)
       # Ugly hack for subtracting out class/end.  >.<
       loc_over_m  = x_over_y(stats["codelines"], stats["methods"])
@@ -277,19 +294,5 @@ module CodeCounter
       "classes" => 0,
       "methods" => 0,
     }
-    def print_line(name, stats)
-      return if stats['lines'] == 0
-
-      @print_buffer << ROW_PATTERN % pad_elements(arrange_line_data(name, stats))
-    end
-
-    def print_code_test_stats
-      code  = calculate_code
-      tests = calculate_tests
-      ratio = (code != 0) ? "#{sprintf("%.1f", tests.to_f/code)}" : "0.0"
-
-      @print_buffer << " Code LOC: #{code}  Test LOC: #{tests}  Code to Test Ratio: 1:#{ratio}\n"
-      @print_buffer << "\n"
-    end
   end
 end
