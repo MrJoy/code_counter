@@ -228,9 +228,10 @@ module CodeCounter
     # TODO: Make this respond to changes caused by `.add_path` and
     # TODO: `.add_test_group`.
     COL_WIDTHS      = [[22,-1], [7,1], [7,1], [9,1], [9,1], [5,1], [7,1]]
-    HEADER_PATTERN  = '|' + COL_WIDTHS.map { |(w,_)| "%-#{w}s" }.join('|') + "|\n"
-    ROW_PATTERN     = '|' + COL_WIDTHS.map { |(w,d)| "%#{w*d}s" }.join('|') + "|\n"
     HEADERS         = ['Name', 'Lines', 'LOC', 'Classes', 'Methods', 'M/C', 'LOC/M']
+
+    HEADER_PATTERN  = '|' + COL_WIDTHS.map { |(w,_)| " %-#{w}s " }.join('|') + "|\n"
+    ROW_PATTERN     = '|' + COL_WIDTHS.map { |(w,d)| " %#{w*d}s " }.join('|') + "|\n"
     SPLITTER        = HEADER_PATTERN % COL_WIDTHS.map { |(w,_)| '-' * w }
 
     def pad_elements(list)
