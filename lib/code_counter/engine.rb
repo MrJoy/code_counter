@@ -145,7 +145,7 @@ module CodeCounter
     end
 
     def blank_stats
-      return { "lines" => 0, "codelines" => 0, "classes" => 0, "methods" => 0 }.dup
+      return BLANK_STATS_TEMPLATE.dup
     end
 
     def calculate_group_statistics(directories, pattern = FILTER)
@@ -271,6 +271,12 @@ module CodeCounter
       ]
     end
 
+    BLANK_STATS_TEMPLATE = {
+      "lines" => 0,
+      "codelines" => 0,
+      "classes" => 0,
+      "methods" => 0,
+    }
     def print_line(name, stats)
       return if stats['lines'] == 0
 
