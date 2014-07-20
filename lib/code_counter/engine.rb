@@ -131,7 +131,7 @@ module CodeCounter
       @print_buffer
     end
 
-    private
+    protected
 
     def calculate_statistics
       @pairs.inject({}) do |stats, pair|
@@ -261,8 +261,6 @@ module CodeCounter
 
       @print_buffer << " Code LOC: #{code}  Test LOC: #{tests}  Code to Test Ratio: 1:#{ratio}\n\n"
     end
-
-    private
 
     def compute_effective_loc_over_m(stats)
       # Ugly hack for subtracting out class/end.  >.<
