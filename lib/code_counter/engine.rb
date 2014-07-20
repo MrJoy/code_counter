@@ -152,7 +152,14 @@ module CodeCounter
           File.open(path) do |fh|
             while line = fh.gets
               stats["lines"] += 1
+              # TODO: Should we try to count modules?
               stats["classes"] += 1 if line =~ /class [A-Z]/
+              # TODO: Incorporate all Cucumber aliases, break out support for
+              # TODO: different testing tools into something more
+              # TODO: modular/extensible.
+              #
+              # TODO: Are there alternative syntaxes that this won't pick up
+              # TODO: properly?
               stats["methods"] += 1 if line =~ /(def [a-z]|should .* do|test .* do|it .* do|(Given|When|Then) .* do)/
               stats["codelines"] += 1 unless line =~ /^\s*$/ || line =~ /^\s*#/
             end
