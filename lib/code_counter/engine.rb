@@ -193,7 +193,7 @@ module CodeCounter
       return true
     end
 
-    # Make a stab at determining if the file specifief is a shell program by
+    # Make a stab at determining if the file specified is a shell program by
     # seeing if it has a shebang line.
     def is_shell_program?(path)
       magic_word = File.open(path, "r", { :encoding => "ASCII-8BIT" }) do |fh|
