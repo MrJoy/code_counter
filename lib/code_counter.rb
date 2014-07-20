@@ -1,3 +1,5 @@
-require File.join(File.dirname(__FILE__), 'code_counter', 'version')
-require File.join(File.dirname(__FILE__), 'code_counter', 'engine')
-require File.join(File.dirname(__FILE__), 'code_counter', 'rake')
+$LOAD_PATH << File.dirname(__FILE__)
+require File.join('code_counter', 'version')
+require File.join('code_counter', 'fs_helpers')
+require File.join('code_counter', 'engine')
+require File.join('code_counter', 'rake')
