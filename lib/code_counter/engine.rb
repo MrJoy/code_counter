@@ -39,25 +39,37 @@ module CodeCounter
     ###########################################################################
     # Default configuration
     ###########################################################################
-    def self.init!
-      add_path("Controllers", "app/controllers")
-      add_path("Mailers", "app/mailers")
-      add_path("Models", "app/models")
-      add_path("Views", "app/views")
-      add_path("Helpers", "app/helpers")
-      add_path("Binaries", "bin", true, true)
-      add_path("Binaries", "script", true, true)
-      add_path("Binaries", "scripts", true, true)
-      add_path("Libraries", "lib")
-      add_path("Source", "source")
-      add_path("Source", "src")
-      add_path("Unit tests", "test")
-      add_path("RSpec specs", "spec")
-      add_path("Features", "features")
+    DEFAULT_PATHS = [
+      ["Controllers", "app/controllers",  true, false],
+      ["Mailers",     "app/mailers",      true, false],
+      ["Models",      "app/models",       true, false],
+      ["Views",       "app/views",        true, false],
+      ["Helpers",     "app/helpers",      true, false],
+      ["Binaries",    "bin",              true, true],
+      ["Binaries",    "script",           true, true],
+      ["Binaries",    "scripts",          true, true],
+      ["Libraries",   "lib",              true, false],
+      ["Source",      "source",           true, false],
+      ["Source",      "src",              true, false],
+      ["Unit tests",  "test",             true, false],
+      ["RSpec specs", "spec",             true, false],
+      ["Features",    "features",         true, false],
+    ]
 
-      add_test_group("Unit tests")
-      add_test_group("RSpec specs")
-      add_test_group("Features")
+    DEFAULT_TEST_GROUPS = [
+      "Unit tests",
+      "RSpec specs",
+      "Features",
+    ]
+
+    def self.init!
+      DEFAULT_PATHS.each do |(key, dir, recursive, is_bin_dir)|
+        add_path(key, dir, recursive, is_bin_dir)
+      end
+
+      DEFAULT_TEST_GROUPS.each do |key|
+        add_test_group(key)
+      end
     end
     init!
 
