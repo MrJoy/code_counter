@@ -40,20 +40,20 @@ module CodeCounter
     # Default configuration
     ###########################################################################
     DEFAULT_PATHS = [
-      ["Controllers", "app/controllers",  true, false],
-      ["Mailers",     "app/mailers",      true, false],
-      ["Models",      "app/models",       true, false],
-      ["Views",       "app/views",        true, false],
-      ["Helpers",     "app/helpers",      true, false],
+      ["Controllers", "app/controllers"],
+      ["Mailers",     "app/mailers"],
+      ["Models",      "app/models"],
+      ["Views",       "app/views"],
+      ["Helpers",     "app/helpers"],
       ["Binaries",    "bin",              true, true],
       ["Binaries",    "script",           true, true],
       ["Binaries",    "scripts",          true, true],
-      ["Libraries",   "lib",              true, false],
-      ["Source",      "source",           true, false],
-      ["Source",      "src",              true, false],
-      ["Unit tests",  "test",             true, false],
-      ["RSpec specs", "spec",             true, false],
-      ["Features",    "features",         true, false],
+      ["Libraries",   "lib"],
+      ["Source",      "source"],
+      ["Source",      "src"],
+      ["Unit tests",  "test"],
+      ["RSpec specs", "spec"],
+      ["Features",    "features"],
     ]
 
     DEFAULT_TEST_GROUPS = [
@@ -63,8 +63,8 @@ module CodeCounter
     ]
 
     def self.init!
-      DEFAULT_PATHS.each do |(key, dir, recursive, is_bin_dir)|
-        add_path(key, dir, recursive, is_bin_dir)
+      DEFAULT_PATHS.each do |path_info|
+        add_path(*path_info)
       end
 
       DEFAULT_TEST_GROUPS.each do |key|
