@@ -134,7 +134,10 @@ module CodeCounter
     private
 
     def calculate_statistics
-      @pairs.inject({}) { |stats, pair| stats[pair.first] = calculate_group_statistics(pair.last); stats }
+      @pairs.inject({}) do |stats, pair|
+        stats[pair.first] = calculate_group_statistics(pair.last)
+        stats
+      end
     end
 
     def ignore_file?(file_path)
