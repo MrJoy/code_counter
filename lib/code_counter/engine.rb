@@ -1,6 +1,7 @@
 require 'set'
 require 'code_counter/fs_helpers'
 require 'code_counter/reporter'
+require 'code_counter/statistics_group'
 
 module CodeCounter
   class Engine
@@ -140,40 +141,33 @@ module CodeCounter
       @ignore_files.include?(file_path)
     end
 
-    def blank_stats
-      return BLANK_STATS_TEMPLATE.dup
-    end
-
     def calculate_group_statistics(group_name, directories, allowed_extensions = ALLOWED_EXTENSIONS)
-      stats = blank_stats
-      stats['group'] = group_name
+      stats = CodeCounter::StatisticsGroup.new(group_name)
 
       directories.each do |directory|
-        Dir.foreach(directory) do |file|
-          path = Pathname.new(File.join(directory, file))
+        FSHelpers.enumerate_files(directory).each do |path|
           next unless is_eligible_file?(path, allowed_extensions)
 
           # Now, go ahead and analyze the file.
-          File.open(path) do |fh|
-            while line = fh.gets
-              stats["lines"] += 1
-              # TODO: Should we try to count modules?
-              stats["classes"] += 1 if line =~ /class [A-Z]/
-              # TODO: Incorporate all Cucumber aliases, break out support for
-              # TODO: different testing tools into something more
-              # TODO: modular/extensible.
-              #
-              # TODO: Are there alternative syntaxes that this won't pick up
-              # TODO: properly?
-              stats["methods"] += 1 if line =~ /(def [a-z]|should .* do|test .* do|it .* do|(Given|When|Then) .* do)/
-              stats["codelines"] += 1 unless line =~ /^\s*$/ || line =~ /^\s*#/
-            end
-          end
+          lines = File.readlines(path)
+          # TODO: Should we try to count modules?
+          classes = lines.select { |line| line =~ /class [A-Z]/ }.length
+          # TODO: Incorporate all Cucumber aliases, break out support for
+          # TODO: different testing tools into something more
+          # TODO: modular/extensible.
+          #
+          # TODO: Are there alternative syntaxes that this won't pick up
+          # TODO: properly?
+          methods = lines.select { |line| line =~ /(def [a-z]|should .* do|test .* do|it .* do|(Given|When|Then) .* do)/ }.length
+          blanks = lines.select { |line| line =~ /^\s*(#.*)?$/ }.length
+
+          stats.add_lines(lines.length, lines.length - blanks)
+          stats.add_classes(classes)
+          stats.add_methods(methods)
         end
       end
 
-      stats['m_over_c'] = x_over_y(stats['methods'], stats['classes'])
-      stats['loc_over_m'] = compute_effective_loc_over_m(stats)
+      stats.set_loc_per_method(compute_effective_loc_over_m(stats))
 
       return stats
     end
@@ -192,13 +186,11 @@ module CodeCounter
     end
 
     def calculate_total
-      total = blank_stats
-      @statistics.each_value do |pair|
-        pair.each do |k, v|
-          total[k] += v if total[k]
-        end
+      total = CodeCounter::StatisticsGroup.new("Total", true)
+      @statistics.each_value do |stats|
+        total.add_group(stats)
       end
-      total
+      return total
     end
 
     def calculate_code
@@ -212,7 +204,7 @@ module CodeCounter
     def calculate_type(test_match)
       return @statistics.
         select { |group, _| TEST_TYPES.include?(group) == test_match }.
-        map { |_, stats| stats['codelines'] }.
+        map { |_, stats| stats.lines_code }.
         inject(0) { |sum, loc| sum + loc }
     end
 
@@ -224,17 +216,9 @@ module CodeCounter
 
     def compute_effective_loc_over_m(stats)
       # Ugly hack for subtracting out class/end.  >.<
-      loc_over_m  = x_over_y(stats['codelines'], stats['methods'])
+      loc_over_m  = x_over_y(stats.lines_code, stats.methods)
       loc_over_m -= 2 if loc_over_m >= 2
       return loc_over_m
     end
-
-
-    BLANK_STATS_TEMPLATE = {
-      'lines'     => 0,
-      'codelines' => 0,
-      'classes'   => 0,
-      'methods'   => 0,
-    }
   end
 end

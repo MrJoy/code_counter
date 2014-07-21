@@ -32,13 +32,13 @@ module CodeCounter
     # TODO: Make this respond to changes caused by `.add_path` and
     # TODO: `.add_test_group`.
     COLUMNS = [
-      { minimum_width: 20, alignment: -1, header: 'Name',     field: 'group' },
-      { minimum_width:  5, alignment:  1, header: 'Lines',    field: 'lines' },
-      { minimum_width:  5, alignment:  1, header: 'LOC',      field: 'codelines' },
-      { minimum_width:  7, alignment:  1, header: 'Classes',  field: 'classes' },
-      { minimum_width:  7, alignment:  1, header: 'Methods',  field: 'methods' },
-      { minimum_width:  3, alignment:  1, header: 'M/C',      field: 'm_over_c' },
-      { minimum_width:  5, alignment:  1, header: 'LOC/M',    field: 'loc_over_m' },
+      { minimum_width: 20, alignment: -1, header: 'Name',     field: :name },
+      { minimum_width:  5, alignment:  1, header: 'Lines',    field: :lines_raw },
+      { minimum_width:  5, alignment:  1, header: 'LOC',      field: :lines_code },
+      { minimum_width:  7, alignment:  1, header: 'Classes',  field: :classes },
+      { minimum_width:  7, alignment:  1, header: 'Methods',  field: :methods },
+      { minimum_width:  3, alignment:  1, header: 'M/C',      field: :methods_per_class },
+      { minimum_width:  5, alignment:  1, header: 'LOC/M',    field: :loc_per_method },
     ].map { |cfg| OpenStruct.new(cfg) }
 
     def calculate_column_widths(pairs, statistics)
@@ -48,7 +48,7 @@ module CodeCounter
     end
 
     def max_width_for_field(statistics, cfg)
-      return (statistics.map { |_,stats| stats[cfg.field].to_s.length } + [cfg.minimum_width]).max
+      return (statistics.map { |_,stats| stats.send(cfg.field).to_s.length } + [cfg.minimum_width]).max
     end
 
     def row_pattern
@@ -74,7 +74,7 @@ module CodeCounter
     end
 
     def print_line(name, stats)
-      return if stats['lines'] == 0
+      return if stats.lines_raw == 0
 
       @print_buffer << row_pattern % arrange_line_data(name, stats)
     end
@@ -84,7 +84,7 @@ module CodeCounter
     end
 
     def arrange_line_data(name, stats)
-      return COLUMNS.map { |cfg| stats[cfg[:field]] }
+      return COLUMNS.map { |cfg| stats.send(cfg[:field]) }
     end
   end
 end
