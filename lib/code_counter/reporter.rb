@@ -1,3 +1,4 @@
+require 'ostruct'
 require 'pathname'
 
 module CodeCounter
@@ -30,42 +31,41 @@ module CodeCounter
 
     # TODO: Make this respond to changes caused by `.add_path` and
     # TODO: `.add_test_group`.
-    COL_WIDTHS      = [[0,-1], [7,1], [7,1], [9,1], [9,1], [5,1], [7,1]]
-    HEADERS         = ['Name', 'Lines', 'LOC', 'Classes', 'Methods', 'M/C', 'LOC/M']
+    COLUMNS = [
+      { minimum_width: 22, alignment: -1, header: 'Name',     field: 'group' },
+      { minimum_width:  7, alignment:  1, header: 'Lines',    field: 'lines' },
+      { minimum_width:  7, alignment:  1, header: 'LOC',      field: 'codelines' },
+      { minimum_width:  9, alignment:  1, header: 'Classes',  field: 'classes' },
+      { minimum_width:  9, alignment:  1, header: 'Methods',  field: 'methods' },
+      { minimum_width:  5, alignment:  1, header: 'M/C',      field: 'm_over_c' },
+      { minimum_width:  7, alignment:  1, header: 'LOC/M',    field: 'loc_over_m' },
+    ].map { |cfg| OpenStruct.new(cfg) }
 
     def calculate_column_widths(pairs, statistics)
-      COL_WIDTHS[0][0] = max_width_for_groups(statistics, 22)
-      COL_WIDTHS[1][0] = max_width_for_field(statistics, 'lines', 7)
-      COL_WIDTHS[2][0] = max_width_for_field(statistics, 'codelines', 7)
-      COL_WIDTHS[3][0] = max_width_for_field(statistics, 'classes', 9)
-      COL_WIDTHS[4][0] = max_width_for_field(statistics, 'methods', 9)
-      COL_WIDTHS[5][0] = max_width_for_field(statistics, 'm_over_c', 5)
-      COL_WIDTHS[6][0] = max_width_for_field(statistics, 'loc_over_m', 7)
+      COLUMNS.each do |cfg|
+        cfg[:width] = max_width_for_field(statistics, cfg)
+      end
     end
 
-    def max_width_for_groups(statistics, minimum)
-      return (statistics.map { |group,_| group.to_s.length } + [minimum]).max
-    end
-
-    def max_width_for_field(statistics, field, minimum)
-      return (statistics.map { |_,stats| stats[field].to_s.length } + [minimum]).max
+    def max_width_for_field(statistics, cfg)
+      return (statistics.map { |_,stats| stats[cfg.field].to_s.length } + [cfg.minimum_width]).max
     end
 
     def row_pattern
-      @row_pattern ||= '|' + COL_WIDTHS.map { |(w,d)| " %#{w*d}s " }.join('|') + "|\n"
+      @row_pattern ||= '|' + COLUMNS.map { |cfg| " %#{cfg[:width]*cfg[:alignment]}s " }.join('|') + "|\n"
     end
 
     def header_pattern
-      @header_pattern ||= '|' + COL_WIDTHS.map { |(w,_)| " %-#{w}s " }.join('|') + "|\n"
+      @header_pattern ||= '|' + COLUMNS.map { |cfg| " %-#{cfg[:width]}s " }.join('|') + "|\n"
     end
 
     def splitter
-      @splitter ||= (header_pattern % COL_WIDTHS.map { |(w,_)| '-' * w }).gsub(/ /, '-')
+      @splitter ||= (header_pattern % COLUMNS.map { |cfg| '-' * cfg[:width] }).gsub(/ /, '-')
     end
 
     def print_header
       print_splitter
-      @print_buffer << header_pattern % HEADERS
+      @print_buffer << header_pattern % COLUMNS.map { |cfg| cfg[:header] }
       print_splitter
     end
 
