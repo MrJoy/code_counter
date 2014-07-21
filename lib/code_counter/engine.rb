@@ -28,15 +28,15 @@ module CodeCounter
 
     def self.add_path(key, directory, recursive = true, is_script_dir = false)
       directory = Pathname.new(directory) unless directory.kind_of?(Pathname)
-
       directory = canonicalize_directory(directory)
-      if directory
-        STATS_DIRECTORIES << [key, directory]
-        SCRIPT_DIRECTORIES << directory if is_script_dir
-        if recursive
-          enumerate_directories(directory).
-            each { |dirent| add_path(key, canonicalize_directory(dirent), recursive, is_script_dir) }
-        end
+
+      return unless directory
+
+      STATS_DIRECTORIES << [key, directory]
+      SCRIPT_DIRECTORIES << directory if is_script_dir
+      if recursive
+        enumerate_directories(directory).
+          each { |dirent| add_path(key, canonicalize_directory(dirent), recursive, is_script_dir) }
       end
     end
 
