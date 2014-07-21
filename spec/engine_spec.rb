@@ -3,8 +3,6 @@ require 'code_counter/engine'
 describe CodeCounter::Engine do
   include FileUtils
 
-  PROJECT_DIR=File.expand_path(Dir.pwd)
-
   def run_cli!(fixture, mappings)
     cd File.join('spec', 'fixtures', fixture.to_s) do
       ENV['IGNORE_FILE_GLOBS'] = ''

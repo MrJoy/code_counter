@@ -6,7 +6,6 @@ describe CodeCounter::FSHelpers do
   end
 
   subject { FSHelperTestClass.new }
-  PROJECT_DIR = Pathname.new(Dir.pwd).expand_path
 
   describe '#canonicalize_directory' do
     it 'returns nil if given a path to a file' do

@@ -28,6 +28,9 @@ end
 
 $LOAD_PATH << File.expand_path("../../lib", __FILE__)
 
+require 'pathname'
+PROJECT_DIR = Pathname.new(Dir.pwd).expand_path
+
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
   # These two settings work together to allow you to limit a spec run
