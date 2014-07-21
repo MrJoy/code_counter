@@ -43,20 +43,20 @@ module CodeCounter
     # Default configuration
     ###########################################################################
     DEFAULT_PATHS = [
-      ["Controllers", "app/controllers"],
-      ["Mailers",     "app/mailers"],
-      ["Models",      "app/models"],
-      ["Views",       "app/views"],
-      ["Helpers",     "app/helpers"],
-      ["Binaries",    "bin",              true, true],
-      ["Binaries",    "script",           true, true],
-      ["Binaries",    "scripts",          true, true],
-      ["Libraries",   "lib"],
-      ["Source",      "source"],
-      ["Source",      "src"],
-      ["Unit tests",  "test"],
-      ["RSpec specs", "spec"],
-      ["Features",    "features"],
+      ['Controllers', 'app/controllers'],
+      ['Mailers',     'app/mailers'],
+      ['Models',      'app/models'],
+      ['Views',       'app/views'],
+      ['Helpers',     'app/helpers'],
+      ['Binaries',    'bin',              true, true],
+      ['Binaries',    'script',           true, true],
+      ['Binaries',    'scripts',          true, true],
+      ['Libraries',   'lib'],
+      ['Source',      'source'],
+      ['Source',      'src'],
+      ['Unit tests',  'test'],
+      ['RSpec specs', 'spec'],
+      ['Features',    'features'],
     ]
 
     DEFAULT_TEST_GROUPS = [
