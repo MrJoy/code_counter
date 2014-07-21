@@ -89,7 +89,9 @@ module CodeCounter
       @reporter     = CodeCounter::Reporter.new
 
       @bin_dirs     = BIN_DIRECTORIES.dup
-      @pairs        = STATS_DIRECTORIES.select { |pair| File.directory?(pair[1]) }
+      @pairs        = STATS_DIRECTORIES.
+        map { |pair| [pair.first, FSHelpers.canonicalize_directory(pair.last)] }.
+        compact { |pair| pair.last }
       @ignore_files = collect_files_to_ignore(ignore_file_globs)
 
       @pairs = coalesce_pairs(@pairs)
