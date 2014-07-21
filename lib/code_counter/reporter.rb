@@ -84,15 +84,7 @@ module CodeCounter
     end
 
     def arrange_line_data(name, stats)
-      return [
-        name,
-        stats['lines'],
-        stats['codelines'],
-        stats['classes'],
-        stats['methods'],
-        stats['m_over_c'],
-        stats['loc_over_m'],
-      ]
+      return COLUMNS.map { |cfg| stats[cfg[:field]] }
     end
   end
 end
