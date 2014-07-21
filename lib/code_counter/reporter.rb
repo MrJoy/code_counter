@@ -11,13 +11,13 @@ module CodeCounter
       calculate_column_widths(pairs, statistics)
 
       print_header
-      pairs.each do |pair|
-        print_line(pair.first, statistics[pair.first])
+      pairs.each do |(group, _)|
+        print_line(statistics[group])
       end
       print_splitter
 
       if total
-        print_line("Total", total)
+        print_line(total)
         print_splitter
       end
 
@@ -73,18 +73,14 @@ module CodeCounter
       @print_buffer << splitter
     end
 
-    def print_line(name, stats)
+    def print_line(stats)
       return if stats.lines_raw == 0
 
-      @print_buffer << row_pattern % arrange_line_data(name, stats)
+      @print_buffer << row_pattern % COLUMNS.map { |cfg| stats.send(cfg[:field]) }
     end
 
     def print_code_test_stats(cloc, tloc, test_ratio)
       @print_buffer << " Code LOC: #{cloc}  Test LOC: #{tloc}  Code to Test Ratio: #{test_ratio}\n\n"
-    end
-
-    def arrange_line_data(name, stats)
-      return COLUMNS.map { |cfg| stats.send(cfg[:field]) }
     end
   end
 end
