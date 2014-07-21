@@ -12,10 +12,13 @@ module CodeCounter
     # Given a directory, returns all directories that are immediate children
     # of that directory -- excluding special directories `.` and `..`.
     def self.enumerate_directory(directory)
-      return Dir.entries(directory).
-        reject { |dirent| dirent =~ /^\.\.?$/ }.
-        map { |dirent| File.join(directory, dirent) }.
-        select { |dirent| File.directory?(dirent) }
+      directory = Pathname.new(directory) unless(directory.kind_of?(Pathname))
+
+      return directory.children.
+        select(&:directory?).
+        map(&:expand_path).
+        map(&:to_s)
+    end
 
     def self.is_allowed_file_type(fname, allowed_extensions)
       fname = Pathname.new(fname) unless(fname.kind_of?(Pathname))
