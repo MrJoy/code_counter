@@ -259,7 +259,7 @@ module CodeCounter
 
     def compute_effective_loc_over_m(stats)
       # Ugly hack for subtracting out class/end.  >.<
-      loc_over_m  = x_over_y(stats["codelines"], stats["methods"])
+      loc_over_m  = x_over_y(stats['codelines'], stats['methods'])
       loc_over_m -= 2 if loc_over_m >= 2
       return loc_over_m
     end
@@ -277,10 +277,10 @@ module CodeCounter
     end
 
     BLANK_STATS_TEMPLATE = {
-      "lines" => 0,
-      "codelines" => 0,
-      "classes" => 0,
-      "methods" => 0,
+      'lines'     => 0,
+      'codelines' => 0,
+      'classes'   => 0,
+      'methods'   => 0,
     }
   end
 end
