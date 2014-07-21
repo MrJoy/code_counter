@@ -3,9 +3,6 @@ require 'pathname'
 module CodeCounter
   class Reporter
     attr_reader :print_buffer
-    def initialize
-      @print_buffer = ''
-    end
 
     def report(total, pairs, statistics, cloc, tloc, test_ratio)
       @print_buffer = ''
