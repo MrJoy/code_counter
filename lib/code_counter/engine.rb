@@ -23,7 +23,7 @@ module CodeCounter
         STATS_DIRECTORIES << [key, directory]
         BIN_DIRECTORIES << directory if is_bin_dir
         if recursive
-          FSHelpers.enumerate_directory(directory).
+          FSHelpers.enumerate_directories(directory).
             each { |dirent| add_path(key, dirent, recursive, is_bin_dir) }
         end
       end

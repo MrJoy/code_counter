@@ -19,7 +19,7 @@ describe CodeCounter::FSHelpers do
     end
   end
 
-  describe '.enumerate_directory' do
+  describe '.enumerate_directories' do
     let(:example_path) { 'spec/fixtures/rspec/spec' }
     let(:example_result) do
       [
@@ -30,7 +30,25 @@ describe CodeCounter::FSHelpers do
       end
     end
     it 'returns the child directories of the specified dir, excluding `.` and `..`' do
-      result = subject.enumerate_directory(example_path)
+      result = subject.enumerate_directories(example_path)
+
+      expect(result).to eq(example_result)
+    end
+  end
+
+
+  describe '.enumerate_files' do
+    let(:example_path) { 'spec/fixtures/binaries/bin' }
+    let(:example_result) do
+      [
+        "actual_binary",
+        "dummy",
+      ].map do |fname|
+        (PROJECT_DIR + example_path + fname)
+      end
+    end
+    it 'returns the children of the specified dir, excluding directories' do
+      result = subject.enumerate_files(example_path)
 
       expect(result).to eq(example_result)
     end

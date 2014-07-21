@@ -11,7 +11,7 @@ module CodeCounter
 
     # Given a directory, returns all directories that are immediate children
     # of that directory -- excluding special directories `.` and `..`.
-    def self.enumerate_directory(directory)
+    def self.enumerate_directories(directory)
       directory = Pathname.new(directory) unless(directory.kind_of?(Pathname))
 
       return directory.
@@ -20,6 +20,18 @@ module CodeCounter
         map(&:expand_path).
         map(&:to_s)
     end
+
+    # Given a directory, returns all files that are immediate children
+    # of that directory -- excluding directories.
+    def self.enumerate_files(directory)
+      directory = Pathname.new(directory) unless(directory.kind_of?(Pathname))
+
+      return directory.
+        children.
+        reject(&:directory?).
+        map(&:expand_path)
+    end
+
 
     def self.is_allowed_file_type(fname, allowed_extensions)
       fname = Pathname.new(fname) unless(fname.kind_of?(Pathname))
