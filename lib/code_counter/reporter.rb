@@ -31,24 +31,32 @@ module CodeCounter
     COL_WIDTHS      = [[22,-1], [7,1], [7,1], [9,1], [9,1], [5,1], [7,1]]
     HEADERS         = ['Name', 'Lines', 'LOC', 'Classes', 'Methods', 'M/C', 'LOC/M']
 
-    HEADER_PATTERN  = '|' + COL_WIDTHS.map { |(w,_)| " %-#{w}s " }.join('|') + "|\n"
-    ROW_PATTERN     = '|' + COL_WIDTHS.map { |(w,d)| " %#{w*d}s " }.join('|') + "|\n"
-    SPLITTER        = (HEADER_PATTERN % COL_WIDTHS.map { |(w,_)| '-' * w }).gsub(/ /, '-')
+    def row_pattern
+      @row_pattern ||= '|' + COL_WIDTHS.map { |(w,d)| " %#{w*d}s " }.join('|') + "|\n"
+    end
+
+    def header_pattern
+      @header_pattern ||= '|' + COL_WIDTHS.map { |(w,_)| " %-#{w}s " }.join('|') + "|\n"
+    end
+
+    def splitter
+      @splitter ||= (header_pattern % COL_WIDTHS.map { |(w,_)| '-' * w }).gsub(/ /, '-')
+    end
 
     def print_header
       print_splitter
-      @print_buffer << HEADER_PATTERN % HEADERS
+      @print_buffer << header_pattern % HEADERS
       print_splitter
     end
 
     def print_splitter
-      @print_buffer << SPLITTER
+      @print_buffer << splitter
     end
 
     def print_line(name, stats)
       return if stats['lines'] == 0
 
-      @print_buffer << ROW_PATTERN % arrange_line_data(name, stats)
+      @print_buffer << row_pattern % arrange_line_data(name, stats)
     end
 
     def print_code_test_stats(cloc, tloc, test_ratio)
