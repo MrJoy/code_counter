@@ -6,6 +6,9 @@ module CodeCounter
 
     def report(total, pairs, statistics, cloc, tloc, test_ratio)
       @print_buffer = ''
+
+      calculate_column_widths(pairs, statistics)
+
       print_header
       pairs.each do |pair|
         print_line(pair.first, statistics[pair.first])
@@ -25,11 +28,24 @@ module CodeCounter
 
     protected
 
-
     # TODO: Make this respond to changes caused by `.add_path` and
     # TODO: `.add_test_group`.
-    COL_WIDTHS      = [[22,-1], [7,1], [7,1], [9,1], [9,1], [5,1], [7,1]]
+    COL_WIDTHS      = [[0,-1], [7,1], [7,1], [9,1], [9,1], [5,1], [7,1]]
     HEADERS         = ['Name', 'Lines', 'LOC', 'Classes', 'Methods', 'M/C', 'LOC/M']
+
+    def calculate_column_widths(pairs, statistics)
+      COL_WIDTHS[0][0] = (pairs.map(&:first).map(&:length) + [22]).max
+      COL_WIDTHS[1][0] = max_width_for_field(statistics, 'lines', 7)
+      COL_WIDTHS[2][0] = max_width_for_field(statistics, 'codelines', 7)
+      COL_WIDTHS[3][0] = max_width_for_field(statistics, 'classes', 9)
+      COL_WIDTHS[4][0] = max_width_for_field(statistics, 'methods', 9)
+      COL_WIDTHS[5][0] = max_width_for_field(statistics, 'm_over_c', 5)
+      COL_WIDTHS[6][0] = max_width_for_field(statistics, 'loc_over_m', 7)
+    end
+
+    def max_width_for_field(statistics, field, minimum)
+      return (statistics.map { |_,stats| stats[field].to_s.length } + [minimum]).max
+    end
 
     def row_pattern
       @row_pattern ||= '|' + COL_WIDTHS.map { |(w,d)| " %#{w*d}s " }.join('|') + "|\n"
