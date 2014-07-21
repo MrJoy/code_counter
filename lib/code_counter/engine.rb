@@ -69,6 +69,7 @@ module CodeCounter
         add_test_group(key)
       end
     end
+    # TODO: THis is janky.  Move this to relevant locations for clarity.
     init!
 
 
