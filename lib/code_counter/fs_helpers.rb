@@ -22,6 +22,7 @@ module CodeCounter
 
       return false if fname.basename.to_s =~ /\A\.\.?\Z/
       return false unless (allowed_extensions.include?(fname.extname))
+      return false if fname.directory?
 
       return true
     end

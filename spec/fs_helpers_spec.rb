@@ -26,7 +26,7 @@ describe CodeCounter::FSHelpers do
         "controllers",
         "models",
       ].map do |dir|
-        File.join(example_path, dir)
+        (PROJECT_DIR + example_path + dir).to_s
       end
     end
     it 'returns the child directories of the specified dir, excluding `.` and `..`' do
@@ -61,5 +61,10 @@ describe CodeCounter::FSHelpers do
       expect(result).to be true
     end
 
+    it 'does not allow directories' do
+      result = subject.is_allowed_file_type('bin', [''])
+
+      expect(result).to be false
+    end
   end
 end

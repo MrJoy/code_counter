@@ -75,6 +75,11 @@ module CodeCounter
     # Internals
     ###########################################################################
     FILTER = /.*\.(rb|feature|rake)$/
+    ALLOWED_EXTENSIONS = [
+      '.rb',
+      '.rake',
+      '.feature',
+    ]
     attr_reader :print_buffer
 
     def initialize(ignore_file_globs = [])
@@ -140,13 +145,13 @@ module CodeCounter
       return BLANK_STATS_TEMPLATE.dup
     end
 
-    def calculate_group_statistics(directories, pattern = FILTER)
+    def calculate_group_statistics(directories, allowed_extensions = ALLOWED_EXTENSIONS)
       stats = blank_stats
 
       directories.each do |directory|
         Dir.foreach(directory) do |file|
           path = Pathname.new(File.join(directory, file))
-          next unless is_eligible_file?(path, pattern)
+          next unless is_eligible_file?(path, allowed_extensions)
 
           # Now, go ahead and analyze the file.
           File.open(path) do |fh|
@@ -171,19 +176,15 @@ module CodeCounter
       return stats
     end
 
-    def is_eligible_file?(path, pattern)
-      basename        = path.basename.to_s
-      dirname         = path.dirname.to_s
-
-      is_special_dir  = basename =~ /\A\.\.?\Z/
-      is_expected_ext = basename =~ pattern
+    def is_eligible_file?(path, allowed_extensions)
+      is_allowed_kind = FSHelpers.is_allowed_file_type(path, allowed_extensions)
       is_ignored      = ignore_file?(path.to_s)
-      is_bin_dir      = @bin_dirs.include?(dirname)
+      is_bin_dir      = @bin_dirs.include?(path.dirname.to_s)
 
-      return false if is_special_dir ||
+      return false if path.directory? ||
                       is_ignored ||
-                      (!is_expected_ext && is_bin_dir && !is_shell_program?(path)) ||
-                      (!is_expected_ext && !is_bin_dir)
+                      (!is_allowed_kind && is_bin_dir && !is_shell_program?(path)) ||
+                      (!is_allowed_kind && !is_bin_dir)
 
       return true
     end
