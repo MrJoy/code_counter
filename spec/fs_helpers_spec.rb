@@ -38,7 +38,7 @@ describe CodeCounter::FSHelpers do
 
 
   describe '.enumerate_files' do
-    let(:example_path) { Pathname.new('spec/fixtures/binaries/bin') }
+    let(:example_path) { Pathname.new('spec/fixtures/scripts/bin') }
     let(:example_result) do
       [
         'actual_binary',

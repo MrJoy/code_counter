@@ -9,7 +9,7 @@ require 'code_counter/cli'
   CodeCounter::Engine.add_path(label, path, true, false)
 end
 
-(ENV['ADDITIONAL_BINARY_DIRECTORIES'] || '').split(',').each do |dir|
+(ENV['ADDITIONAL_SCRIPT_DIRECTORIES'] || '').split(',').each do |dir|
   (path, label) = CodeCounter::CLI.expand_labeled_path(dir)
   CodeCounter::Engine.add_path(label, path, true, true)
 end

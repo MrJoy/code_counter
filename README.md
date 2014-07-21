@@ -73,9 +73,9 @@ Additionally, you can configure things using some environment variables:
 * `ADDITIONAL_SOURCE_DIRECTORIES`: A comma-separated list of directories to
   scan for source files.  You may assign a directory to a named group by
   prefixing the path with a group name and colon.  E.G. `ADDITIONAL_SOURCE_DIRECTORIES='Libraries:my_awesome_code'`
-* `ADDITIONAL_BINARY_DIRECTORIES`: A comma-separated list of directories to
-  scan for binaries.  You may assign a directory to a named group by prefixing
-  the path with a group name and colon.  E.G. `ADDITIONAL_BINARY_DIRECTORIES='Binaries:my_awesome_scripts'`
+* `ADDITIONAL_SCRIPT_DIRECTORIES`: A comma-separated list of directories to
+  scan for scripts.  You may assign a directory to a named group by prefixing
+  the path with a group name and colon.  E.G. `ADDITIONAL_SCRIPT_DIRECTORIES='Scripts:my_awesome_scripts'`
 * `IGNORE_FILE_GLOBS`: A comma-separated list of file globs to ignore.
 
 

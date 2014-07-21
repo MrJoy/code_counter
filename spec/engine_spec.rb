@@ -17,11 +17,11 @@ describe CodeCounter::Engine do
           map(&:first)
       ).join(',')
 
-      ENV['ADDITIONAL_BINARY_DIRECTORIES'] = (
-        (mappings[:binaries] || []).
+      ENV['ADDITIONAL_SCRIPT_DIRECTORIES'] = (
+        (mappings[:scripts] || []).
           select { |items| items.length == 2}.
           map { |(label,dir)| "#{label}:#{dir}" } +
-        (mappings[:binaries] || []).
+        (mappings[:scripts] || []).
           select { |items| items.length == 1}.
           map(&:first)
       ).join(',')
@@ -39,7 +39,7 @@ describe CodeCounter::Engine do
       (mappings[:source] || []).each do |(shorthand, full)|
         CodeCounter::Engine.add_path(shorthand, full)
       end
-      (mappings[:binaries] || []).each do |(shorthand, full)|
+      (mappings[:scripts] || []).each do |(shorthand, full)|
         CodeCounter::Engine.add_path(shorthand, full, true, true)
       end
 
@@ -119,9 +119,9 @@ describe CodeCounter::Engine do
         :test_loc   => /Test LOC: 6/,
         :ratio      => /Code to Test Ratio: 1:0.7/,
       },
-      :binaries => {
-        :mappings   => { :source => [], :binaries => [['Fancy Stuff', 'special']] },
-        :dir_label  => { :simple => /Binaries/, :fancy => /Fancy/ },
+      :scripts => {
+        :mappings   => { :source => [], :scripts => [['Fancy Stuff', 'special']] },
+        :dir_label  => { :simple => /Scripts/, :fancy => /Fancy/ },
         :code_loc   => { :simple => /Code LOC: 9/, :fancy => /Code LOC: 20/ },
       },
     }
@@ -303,12 +303,12 @@ describe CodeCounter::Engine do
     end
   end
 
-  context "Binaries" do
-    let(:fixture) { :binaries }
+  context "Scripts" do
+    let(:fixture) { :scripts }
 
     context "Library" do
-      it "finds files without extensions in binaries directories" do
-        output = run_lib!(path, mappings.merge(:binaries => []))
+      it "finds files without extensions in script directories" do
+        output = run_lib!(path, mappings.merge(:scripts => []))
 
         expect(output).to match(dir_label[:simple])
         expect(output).to match(code_loc[:simple])
@@ -316,14 +316,14 @@ describe CodeCounter::Engine do
     end
 
     context "CLI" do
-      it "finds files without extensions in binaries directories" do
-        output = run_cli!(path, mappings.merge(:binaries => []))
+      it "finds files without extensions in script directories" do
+        output = run_cli!(path, mappings.merge(:scripts => []))
 
         expect(output).to match(dir_label[:simple])
         expect(output).to match(code_loc[:simple])
       end
 
-      it "allows mapping of binary dirs using the ADDITIONAL_BINARIES_DIRECTORY env var" do
+      it "allows mapping of script dirs using the ADDITIONAL_SCRIPT_DIRECTORY env var" do
         output = run_cli!(path, mappings)
 
         expect(output).to match(dir_label[:fancy])

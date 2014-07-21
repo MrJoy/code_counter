@@ -1,5 +1,11 @@
 # Changes
 
+## v0.4.0
+
+* Rename `ADDITIONAL_BINARY_DIRECTORIES` to `ADDITIONAL_SCRIPT_DIRECTORIES`.
+* Significant internal refactoring.
+
+
 ## v0.3.1
 
 * Add CodeClimate badge to `README.md`.
