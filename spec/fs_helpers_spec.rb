@@ -1,11 +1,14 @@
 require 'code_counter/fs_helpers'
 
 describe CodeCounter::FSHelpers do
-  subject { CodeCounter::FSHelpers }
+  class FSHelperTestClass
+    include CodeCounter::FSHelpers
+  end
 
+  subject { FSHelperTestClass.new }
   PROJECT_DIR = Pathname.new(Dir.pwd).expand_path
 
-  describe '.canonicalize_directory' do
+  describe '#canonicalize_directory' do
     it 'returns nil if given a path to a file' do
       result = subject.canonicalize_directory(PROJECT_DIR + 'Gemfile')
 
@@ -19,7 +22,7 @@ describe CodeCounter::FSHelpers do
     end
   end
 
-  describe '.enumerate_directories' do
+  describe '#enumerate_directories' do
     let(:example_path) { Pathname.new('spec/fixtures/rspec/spec') }
     let(:example_result) do
       [
@@ -37,7 +40,7 @@ describe CodeCounter::FSHelpers do
   end
 
 
-  describe '.enumerate_files' do
+  describe '#enumerate_files' do
     let(:example_path) { Pathname.new('spec/fixtures/scripts/bin') }
     let(:example_result) do
       [
@@ -54,7 +57,7 @@ describe CodeCounter::FSHelpers do
     end
   end
 
-  describe '.is_allowed_file_type' do
+  describe '#is_allowed_file_type' do
     it 'does not allow the magic directory `.`' do
       result = subject.is_allowed_file_type(Pathname.new('.'), [''])
 

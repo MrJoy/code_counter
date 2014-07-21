@@ -1,9 +1,9 @@
 require 'pathname'
 
 module CodeCounter
-  class FSHelpers
+  module FSHelpers
     # Returns the full path to the directory, or nil if it's not a directory.
-    def self.canonicalize_directory(directory)
+    def canonicalize_directory(directory)
       directory = directory.expand_path
       directory = directory.directory? ? directory : nil
       return directory
@@ -11,7 +11,7 @@ module CodeCounter
 
     # Given a directory, returns all directories that are immediate children
     # of that directory -- excluding special directories `.` and `..`.
-    def self.enumerate_directories(directory)
+    def enumerate_directories(directory)
       return directory.
         children.
         select(&:directory?).
@@ -20,7 +20,7 @@ module CodeCounter
 
     # Given a directory, returns all files that are immediate children
     # of that directory -- excluding directories.
-    def self.enumerate_files(directory)
+    def enumerate_files(directory)
       return directory.
         children.
         reject(&:directory?).
@@ -28,7 +28,7 @@ module CodeCounter
     end
 
 
-    def self.is_allowed_file_type(fname, allowed_extensions)
+    def is_allowed_file_type(fname, allowed_extensions)
       return false if fname.basename.to_s =~ /\A\.\.?\Z/
       return false unless allowed_extensions.include?(fname.extname)
       return false if fname.directory?
@@ -38,7 +38,7 @@ module CodeCounter
 
     # Make a stab at determining if the file specified is a shell program by
     # seeing if it has a shebang line.
-    def self.is_shell_program?(path)
+    def is_shell_program?(path)
       magic_word = File.open(path, "r", { :encoding => "ASCII-8BIT" }) do |fh|
         fh.read(2)
       end

@@ -6,6 +6,8 @@ require 'code_counter/statistics_group'
 module CodeCounter
   class Engine
     include CodeCounter::MathHelpers
+    include CodeCounter::FSHelpers
+    extend CodeCounter::FSHelpers
 
     BIN_DIRECTORIES = Set.new
     STATS_DIRECTORIES = []
@@ -23,13 +25,13 @@ module CodeCounter
     def self.add_path(key, directory, recursive = true, is_bin_dir = false)
       directory = Pathname.new(directory) unless directory.kind_of?(Pathname)
 
-      directory = FSHelpers.canonicalize_directory(directory)
+      directory = canonicalize_directory(directory)
       if directory
         STATS_DIRECTORIES << [key, directory]
         BIN_DIRECTORIES << directory if is_bin_dir
         if recursive
-          FSHelpers.enumerate_directories(directory).
-            each { |dirent| add_path(key, FSHelpers.canonicalize_directory(dirent), recursive, is_bin_dir) }
+          enumerate_directories(directory).
+            each { |dirent| add_path(key, canonicalize_directory(dirent), recursive, is_bin_dir) }
         end
       end
     end
@@ -95,7 +97,7 @@ module CodeCounter
 
       @bin_dirs     = BIN_DIRECTORIES.dup
       @pairs        = STATS_DIRECTORIES.
-        map { |pair| [pair.first, FSHelpers.canonicalize_directory(pair.last)] }.
+        map { |pair| [pair.first, canonicalize_directory(pair.last)] }.
         compact { |pair| pair.last }
       @ignore_files = collect_files_to_ignore(ignore_file_globs)
 
@@ -149,7 +151,7 @@ module CodeCounter
       stats = CodeCounter::StatisticsGroup.new(group_name)
 
       directories.each do |directory|
-        FSHelpers.enumerate_files(directory).each do |path|
+        enumerate_files(directory).each do |path|
           next unless is_eligible_file?(path, allowed_extensions)
 
           # Now, go ahead and analyze the file.
@@ -177,13 +179,13 @@ module CodeCounter
     end
 
     def is_eligible_file?(path, allowed_extensions)
-      is_allowed_kind = FSHelpers.is_allowed_file_type(path, allowed_extensions)
+      is_allowed_kind = is_allowed_file_type(path, allowed_extensions)
       is_ignored      = ignore_file?(path)
       is_bin_dir      = @bin_dirs.include?(path.dirname)
 
       return false if path.directory? ||
                       is_ignored ||
-                      (!is_allowed_kind && is_bin_dir && !FSHelpers.is_shell_program?(path)) ||
+                      (!is_allowed_kind && is_bin_dir && !is_shell_program?(path)) ||
                       (!is_allowed_kind && !is_bin_dir)
 
       return true
