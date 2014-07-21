@@ -12,6 +12,8 @@ module CodeCounter
     SCRIPT_DIRECTORIES = Set.new
     STATS_DIRECTORIES = []
     TEST_TYPES = Set.new
+    EXTENSIONS = Set.new
+    BARE_FILES = Set.new
 
     ###########################################################################
     # Mechanisms for configuring the behavior of this tool
@@ -20,6 +22,8 @@ module CodeCounter
       SCRIPT_DIRECTORIES.clear
       STATS_DIRECTORIES.clear
       TEST_TYPES.clear
+      EXTENSIONS.clear
+      BARE_FILES.clear
     end
 
     def self.add_path(key, directory, recursive = true, is_script_dir = false)
@@ -38,6 +42,16 @@ module CodeCounter
 
     def self.add_test_group(key)
       TEST_TYPES << key
+    end
+
+    def self.add_bare_file(filename)
+      filename = Pathname.new(filename) unless filename.kind_of?(Pathname)
+
+      BARE_FILES << filename.expand_path
+    end
+
+    def self.add_extension(extension)
+      EXTENSIONS << extension
     end
 
 
@@ -67,6 +81,20 @@ module CodeCounter
       "Features",
     ]
 
+    DEFAULT_BARE_FILES = [
+      'Gemfile',
+      'Rakefile',
+      'rakefile',
+    ]
+
+    DEFAULT_EXTENSIONS = [
+      '.feature',
+      '.gemspec',
+      '.rake',
+      '.rb',
+      '.ru',
+    ]
+
     def self.init!
       DEFAULT_PATHS.each do |path_info|
         add_path(*path_info)
@@ -75,6 +103,15 @@ module CodeCounter
       DEFAULT_TEST_GROUPS.each do |key|
         add_test_group(key)
       end
+
+      DEFAULT_BARE_FILES.each do |file_info|
+        add_bare_file(file_info)
+      end
+
+      DEFAULT_EXTENSIONS.each do |file_info|
+        add_extension(file_info)
+      end
+
     end
     # TODO: THis is janky.  Move this to relevant locations for clarity.
     init!
@@ -83,15 +120,6 @@ module CodeCounter
     ###########################################################################
     # Internals
     ###########################################################################
-    # TODO: Handle files like `Gemfile`, and `Rakefile`.
-    ALLOWED_EXTENSIONS = [
-      '.feature',
-      '.gemspec',
-      '.rake',
-      '.rb',
-      '.ru',
-    ]
-
     def initialize(ignore_file_globs = [])
       @reporter     = CodeCounter::Reporter.new
 
@@ -147,7 +175,7 @@ module CodeCounter
       @ignore_files.include?(file_path)
     end
 
-    def calculate_group_statistics(group_name, directories, allowed_extensions = ALLOWED_EXTENSIONS)
+    def calculate_group_statistics(group_name, directories, allowed_extensions = EXTENSIONS)
       stats = CodeCounter::StatisticsGroup.new(group_name)
 
       directories.each do |directory|
