@@ -26,7 +26,7 @@ describe CodeCounter::FSHelpers do
         "controllers",
         "models",
       ].map do |dir|
-        (PROJECT_DIR + example_path + dir).to_s
+        PROJECT_DIR + example_path + dir
       end
     end
     it 'returns the child directories of the specified dir, excluding `.` and `..`' do
@@ -44,7 +44,7 @@ describe CodeCounter::FSHelpers do
         "actual_binary",
         "dummy",
       ].map do |fname|
-        (PROJECT_DIR + example_path + fname)
+        PROJECT_DIR + example_path + fname
       end
     end
     it 'returns the children of the specified dir, excluding directories' do

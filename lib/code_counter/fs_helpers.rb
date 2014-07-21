@@ -17,8 +17,7 @@ module CodeCounter
       return directory.
         children.
         select(&:directory?).
-        map(&:expand_path).
-        map(&:to_s)
+        map(&:expand_path)
     end
 
     # Given a directory, returns all files that are immediate children
