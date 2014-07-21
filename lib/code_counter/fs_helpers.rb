@@ -1,0 +1,21 @@
+require 'pathname'
+
+module CodeCounter
+  class FSHelpers
+    # Returns the full path to the directory, or nil if it's not a directory.
+    def self.canonicalize_directory(directory)
+      directory = File.expand_path(directory)
+      directory = File.directory?(directory) ? directory : nil
+      return directory
+    end
+
+    # Given a directory, returns all directories that are immediate children
+    # of that directory -- excluding special directories `.` and `..`.
+    def self.enumerate_directory(directory)
+      return Dir.entries(directory).
+        reject { |dirent| dirent =~ /^\.\.?$/ }.
+        map { |dirent| File.join(directory, dirent) }.
+        select { |dirent| File.directory?(dirent) }
+    end
+  end
+end

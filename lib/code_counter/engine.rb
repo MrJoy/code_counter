@@ -1,5 +1,5 @@
 require 'set'
-require 'pathname'
+require 'code_counter/fs_helpers'
 
 module CodeCounter
   class Engine
@@ -16,21 +16,13 @@ module CodeCounter
       TEST_TYPES.clear
     end
 
-    def self.enumerate_directory(directory)
-      return Dir.entries(directory).
-        reject { |dirent| dirent =~ /^\.\.?$/ }.
-        map { |dirent| File.join(directory, dirent) }.
-        reject { |dirent| !File.directory?(dirent) }
-    end
-
-
-    def self.add_path(key, directory, recursive=true, is_bin_dir=false)
-      directory = File.expand_path(directory)
-      if File.directory?(directory)
+    def self.add_path(key, directory, recursive = true, is_bin_dir = false)
+      directory = FSHelpers.canonicalize_directory(directory)
+      if directory
         STATS_DIRECTORIES << [key, directory]
         BIN_DIRECTORIES << directory if is_bin_dir
-        if(recursive)
-          enumerate_directory(directory).
+        if recursive
+          FSHelpers.enumerate_directory(directory).
             each { |dirent| add_path(key, dirent, recursive, is_bin_dir) }
         end
       end
