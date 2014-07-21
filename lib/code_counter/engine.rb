@@ -207,11 +207,10 @@ module CodeCounter
     end
 
     def calculate_type(test_match)
-      type_loc = 0
-      @statistics.each do |k, v|
-        type_loc += v['codelines'] if TEST_TYPES.include?(k) == test_match
-      end
-      type_loc
+      return @statistics.
+        select { |group, _| TEST_TYPES.include?(group) == test_match }.
+        map { |_, stats| stats['codelines'] }.
+        inject(0) { |sum, loc| sum + loc }
     end
 
 
