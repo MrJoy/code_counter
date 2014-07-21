@@ -1,5 +1,8 @@
+require 'code_counter/math_helpers'
 module CodeCounter
   class StatisticsGroup
+    include CodeCounter::MathHelpers
+
     attr_reader :name, :lines_raw, :lines_code, :classes, :methods,
                 :loc_per_method, :is_aggregate
 
@@ -15,7 +18,7 @@ module CodeCounter
     def methods_per_class
       return nil if @is_aggregate
 
-      return (@classes > 0) ? (@methods / @classes) : 0
+      return safe_div(@methods, @classes)
     end
 
     def set_loc_per_method(loc_per_method)

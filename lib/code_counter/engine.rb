@@ -5,6 +5,8 @@ require 'code_counter/statistics_group'
 
 module CodeCounter
   class Engine
+    include CodeCounter::MathHelpers
+
     BIN_DIRECTORIES = Set.new
     STATS_DIRECTORIES = []
     TEST_TYPES = Set.new
@@ -123,7 +125,7 @@ module CodeCounter
     def to_s
       code  = calculate_code
       tests = calculate_tests
-      test_ratio = "1:%.1f" % x_over_y(tests.to_f, code)
+      test_ratio = "1:%.1f" % safe_div(tests.to_f, code)
 
       @reporter.report(@total, @pairs, @statistics, code, tests, test_ratio)
     end
@@ -208,15 +210,9 @@ module CodeCounter
         inject(0) { |sum, loc| sum + loc }
     end
 
-
-    def x_over_y(top, bottom)
-      return (bottom > 0) ? (top / bottom) : 0
-    end
-
-
     def compute_effective_loc_over_m(stats)
       # Ugly hack for subtracting out class/end.  >.<
-      loc_over_m  = x_over_y(stats.lines_code, stats.methods)
+      loc_over_m  = safe_div(stats.lines_code, stats.methods)
       loc_over_m -= 2 if loc_over_m >= 2
       return loc_over_m
     end
