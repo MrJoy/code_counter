@@ -74,6 +74,7 @@ module CodeCounter
     ###########################################################################
     # Internals
     ###########################################################################
+    # TODO: Handle files like `Gemfile`, and `Rakefile`.
     ALLOWED_EXTENSIONS = [
       '.feature',
       '.gemspec',
