@@ -14,7 +14,8 @@ module CodeCounter
     def self.enumerate_directory(directory)
       directory = Pathname.new(directory) unless(directory.kind_of?(Pathname))
 
-      return directory.children.
+      return directory.
+        children.
         select(&:directory?).
         map(&:expand_path).
         map(&:to_s)
