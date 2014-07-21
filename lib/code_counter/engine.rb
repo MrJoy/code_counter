@@ -139,7 +139,7 @@ module CodeCounter
       groups = {}
       paths_seen = {}
       pairs.each do |pair|
-        next if(paths_seen[pair.last])
+        next if paths_seen[pair.last]
         paths_seen[pair.last] = true
         (groups[pair.first] ||= Set.new) << pair.last
       end
