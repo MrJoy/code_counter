@@ -32,13 +32,13 @@ module CodeCounter
     # TODO: Make this respond to changes caused by `.add_path` and
     # TODO: `.add_test_group`.
     COLUMNS = [
-      { minimum_width: 22, alignment: -1, header: 'Name',     field: 'group' },
-      { minimum_width:  7, alignment:  1, header: 'Lines',    field: 'lines' },
-      { minimum_width:  7, alignment:  1, header: 'LOC',      field: 'codelines' },
-      { minimum_width:  9, alignment:  1, header: 'Classes',  field: 'classes' },
-      { minimum_width:  9, alignment:  1, header: 'Methods',  field: 'methods' },
-      { minimum_width:  5, alignment:  1, header: 'M/C',      field: 'm_over_c' },
-      { minimum_width:  7, alignment:  1, header: 'LOC/M',    field: 'loc_over_m' },
+      { minimum_width: 20, alignment: -1, header: 'Name',     field: 'group' },
+      { minimum_width:  5, alignment:  1, header: 'Lines',    field: 'lines' },
+      { minimum_width:  5, alignment:  1, header: 'LOC',      field: 'codelines' },
+      { minimum_width:  7, alignment:  1, header: 'Classes',  field: 'classes' },
+      { minimum_width:  7, alignment:  1, header: 'Methods',  field: 'methods' },
+      { minimum_width:  3, alignment:  1, header: 'M/C',      field: 'm_over_c' },
+      { minimum_width:  5, alignment:  1, header: 'LOC/M',    field: 'loc_over_m' },
     ].map { |cfg| OpenStruct.new(cfg) }
 
     def calculate_column_widths(pairs, statistics)
