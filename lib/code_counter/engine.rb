@@ -217,7 +217,9 @@ module CodeCounter
 
     def calculate_type(test_match)
       type_loc = 0
-      @statistics.each { |k, v| type_loc += v['codelines'] if TEST_TYPES.include?(k)==test_match }
+      @statistics.each do |k, v|
+        type_loc += v['codelines'] if TEST_TYPES.include?(k) == test_match
+      end
       type_loc
     end
 
