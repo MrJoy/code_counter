@@ -128,7 +128,7 @@ module CodeCounter
 
     def calculate_statistics
       @pairs.inject({}) do |stats, pair|
-        stats[pair.first] = calculate_group_statistics(pair.last)
+        stats[pair.first] = calculate_group_statistics(pair.first, pair.last)
         stats
       end
     end
@@ -141,8 +141,9 @@ module CodeCounter
       return BLANK_STATS_TEMPLATE.dup
     end
 
-    def calculate_group_statistics(directories, allowed_extensions = ALLOWED_EXTENSIONS)
+    def calculate_group_statistics(group_name, directories, allowed_extensions = ALLOWED_EXTENSIONS)
       stats = blank_stats
+      stats['group'] = group_name
 
       directories.each do |directory|
         Dir.foreach(directory) do |file|
