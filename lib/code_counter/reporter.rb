@@ -34,13 +34,17 @@ module CodeCounter
     HEADERS         = ['Name', 'Lines', 'LOC', 'Classes', 'Methods', 'M/C', 'LOC/M']
 
     def calculate_column_widths(pairs, statistics)
-      COL_WIDTHS[0][0] = (pairs.map(&:first).map(&:length) + [22]).max
+      COL_WIDTHS[0][0] = max_width_for_groups(statistics, 22)
       COL_WIDTHS[1][0] = max_width_for_field(statistics, 'lines', 7)
       COL_WIDTHS[2][0] = max_width_for_field(statistics, 'codelines', 7)
       COL_WIDTHS[3][0] = max_width_for_field(statistics, 'classes', 9)
       COL_WIDTHS[4][0] = max_width_for_field(statistics, 'methods', 9)
       COL_WIDTHS[5][0] = max_width_for_field(statistics, 'm_over_c', 5)
       COL_WIDTHS[6][0] = max_width_for_field(statistics, 'loc_over_m', 7)
+    end
+
+    def max_width_for_groups(statistics, minimum)
+      return (statistics.map { |group,_| group.to_s.length } + [minimum]).max
     end
 
     def max_width_for_field(statistics, field, minimum)
