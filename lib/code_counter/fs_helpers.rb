@@ -4,16 +4,14 @@ module CodeCounter
   class FSHelpers
     # Returns the full path to the directory, or nil if it's not a directory.
     def self.canonicalize_directory(directory)
-      directory = File.expand_path(directory)
-      directory = File.directory?(directory) ? directory : nil
+      directory = directory.expand_path
+      directory = directory.directory? ? directory : nil
       return directory
     end
 
     # Given a directory, returns all directories that are immediate children
     # of that directory -- excluding special directories `.` and `..`.
     def self.enumerate_directories(directory)
-      directory = Pathname.new(directory) unless(directory.kind_of?(Pathname))
-
       return directory.
         children.
         select(&:directory?).
@@ -23,8 +21,6 @@ module CodeCounter
     # Given a directory, returns all files that are immediate children
     # of that directory -- excluding directories.
     def self.enumerate_files(directory)
-      directory = Pathname.new(directory) unless(directory.kind_of?(Pathname))
-
       return directory.
         children.
         reject(&:directory?).
@@ -33,10 +29,8 @@ module CodeCounter
 
 
     def self.is_allowed_file_type(fname, allowed_extensions)
-      fname = Pathname.new(fname) unless(fname.kind_of?(Pathname))
-
       return false if fname.basename.to_s =~ /\A\.\.?\Z/
-      return false unless (allowed_extensions.include?(fname.extname))
+      return false unless allowed_extensions.include?(fname.extname)
       return false if fname.directory?
 
       return true

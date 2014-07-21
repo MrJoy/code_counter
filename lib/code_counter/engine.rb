@@ -21,13 +21,15 @@ module CodeCounter
     end
 
     def self.add_path(key, directory, recursive = true, is_bin_dir = false)
+      directory = Pathname.new(directory) unless directory.kind_of?(Pathname)
+
       directory = FSHelpers.canonicalize_directory(directory)
       if directory
         STATS_DIRECTORIES << [key, directory]
         BIN_DIRECTORIES << directory if is_bin_dir
         if recursive
           FSHelpers.enumerate_directories(directory).
-            each { |dirent| add_path(key, dirent, recursive, is_bin_dir) }
+            each { |dirent| add_path(key, FSHelpers.canonicalize_directory(dirent), recursive, is_bin_dir) }
         end
       end
     end
@@ -119,7 +121,7 @@ module CodeCounter
       ignore_file_globs.each do |glob|
         files_to_remove.concat(Dir[glob])
       end
-      files_to_remove.map { |filepath| File.expand_path(filepath) }
+      files_to_remove.map { |filepath| Pathname.new(filepath).expand_path }
     end
 
     def to_s
@@ -176,8 +178,8 @@ module CodeCounter
 
     def is_eligible_file?(path, allowed_extensions)
       is_allowed_kind = FSHelpers.is_allowed_file_type(path, allowed_extensions)
-      is_ignored      = ignore_file?(path.to_s)
-      is_bin_dir      = @bin_dirs.include?(path.dirname.to_s)
+      is_ignored      = ignore_file?(path)
+      is_bin_dir      = @bin_dirs.include?(path.dirname)
 
       return false if path.directory? ||
                       is_ignored ||
