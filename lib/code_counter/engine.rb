@@ -76,9 +76,11 @@ module CodeCounter
     ###########################################################################
     FILTER = /.*\.(rb|feature|rake)$/
     ALLOWED_EXTENSIONS = [
-      '.rb',
-      '.rake',
       '.feature',
+      '.gemspec',
+      '.rake',
+      '.rb',
+      '.ru',
     ]
     attr_reader :print_buffer
 
