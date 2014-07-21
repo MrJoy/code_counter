@@ -1,6 +1,8 @@
 #! /usr/bin/env ruby
-require File.expand_path('../../lib/code_counter/engine', __FILE__)
-require File.expand_path('../../lib/code_counter/cli', __FILE__)
+$LOAD_PATH << File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
+
+require 'code_counter/engine'
+require 'code_counter/cli'
 
 (ENV['ADDITIONAL_SOURCE_DIRECTORIES'] || '').split(',').each do |dir|
   (path, label) = CodeCounter::CLI.expand_labeled_path(dir)
