@@ -152,7 +152,6 @@ module CodeCounter
           # Now, go ahead and analyze the file.
           File.open(path) do |fh|
             while line = fh.gets
-              next if(line.strip == "") # Ignore purely whitespace lines.
               stats["lines"] += 1
               # TODO: Should we try to count modules?
               stats["classes"] += 1 if line =~ /class [A-Z]/
