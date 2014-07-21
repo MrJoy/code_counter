@@ -9,7 +9,7 @@ module CodeCounter
     include CodeCounter::FSHelpers
     extend CodeCounter::FSHelpers
 
-    BIN_DIRECTORIES = Set.new
+    SCRIPT_DIRECTORIES = Set.new
     STATS_DIRECTORIES = []
     TEST_TYPES = Set.new
 
@@ -17,21 +17,21 @@ module CodeCounter
     # Mechanisms for configuring the behavior of this tool
     ###########################################################################
     def self.clear!
-      BIN_DIRECTORIES.clear
+      SCRIPT_DIRECTORIES.clear
       STATS_DIRECTORIES.clear
       TEST_TYPES.clear
     end
 
-    def self.add_path(key, directory, recursive = true, is_bin_dir = false)
+    def self.add_path(key, directory, recursive = true, is_script_dir = false)
       directory = Pathname.new(directory) unless directory.kind_of?(Pathname)
 
       directory = canonicalize_directory(directory)
       if directory
         STATS_DIRECTORIES << [key, directory]
-        BIN_DIRECTORIES << directory if is_bin_dir
+        SCRIPT_DIRECTORIES << directory if is_script_dir
         if recursive
           enumerate_directories(directory).
-            each { |dirent| add_path(key, canonicalize_directory(dirent), recursive, is_bin_dir) }
+            each { |dirent| add_path(key, canonicalize_directory(dirent), recursive, is_script_dir) }
         end
       end
     end
@@ -95,7 +95,7 @@ module CodeCounter
     def initialize(ignore_file_globs = [])
       @reporter     = CodeCounter::Reporter.new
 
-      @bin_dirs     = BIN_DIRECTORIES.dup
+      @script_dirs     = SCRIPT_DIRECTORIES.dup
       @pairs        = STATS_DIRECTORIES.
         map { |pair| [pair.first, canonicalize_directory(pair.last)] }.
         compact { |pair| pair.last }
@@ -181,12 +181,12 @@ module CodeCounter
     def is_eligible_file?(path, allowed_extensions)
       is_allowed_kind = is_allowed_file_type(path, allowed_extensions)
       is_ignored      = ignore_file?(path)
-      is_bin_dir      = @bin_dirs.include?(path.dirname)
+      is_script_dir      = @script_dirs.include?(path.dirname)
 
       return false if path.directory? ||
                       is_ignored ||
-                      (!is_allowed_kind && is_bin_dir && !is_shell_program?(path)) ||
-                      (!is_allowed_kind && !is_bin_dir)
+                      (!is_allowed_kind && is_script_dir && !is_shell_program?(path)) ||
+                      (!is_allowed_kind && !is_script_dir)
 
       return true
     end
