@@ -35,4 +35,31 @@ describe CodeCounter::FSHelpers do
       expect(result).to eq(example_result)
     end
   end
+
+  describe '.is_allowed_file_type' do
+    it 'does not allow the magic directory `.`' do
+      result = subject.is_allowed_file_type('.', [''])
+
+      expect(result).to be false
+    end
+
+    it 'does not allow the magic directory `..`' do
+      result = subject.is_allowed_file_type('..', [''])
+
+      expect(result).to be false
+    end
+
+    it 'does not allow files with incorrect extensions' do
+      result = subject.is_allowed_file_type('foo.py', ['.rb', '.rake'])
+
+      expect(result).to be false
+    end
+
+    it 'does allows files with correct extensions' do
+      result = subject.is_allowed_file_type('foo.rb', ['.rb', '.rake'])
+
+      expect(result).to be true
+    end
+
+  end
 end

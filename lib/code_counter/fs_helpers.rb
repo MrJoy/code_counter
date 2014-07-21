@@ -16,6 +16,14 @@ module CodeCounter
         reject { |dirent| dirent =~ /^\.\.?$/ }.
         map { |dirent| File.join(directory, dirent) }.
         select { |dirent| File.directory?(dirent) }
+
+    def self.is_allowed_file_type(fname, allowed_extensions)
+      fname = Pathname.new(fname) unless(fname.kind_of?(Pathname))
+
+      return false if fname.basename.to_s =~ /\A\.\.?\Z/
+      return false unless (allowed_extensions.include?(fname.extname))
+
+      return true
     end
   end
 end
