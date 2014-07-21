@@ -1,5 +1,6 @@
 require 'set'
 require 'code_counter/fs_helpers'
+require 'code_counter/reporter'
 
 module CodeCounter
   class Engine
@@ -82,12 +83,12 @@ module CodeCounter
       '.rb',
       '.ru',
     ]
-    attr_reader :print_buffer
 
     def initialize(ignore_file_globs = [])
+      @reporter     = CodeCounter::Reporter.new
+
       @bin_dirs     = BIN_DIRECTORIES.dup
       @pairs        = STATS_DIRECTORIES.select { |pair| File.directory?(pair[1]) }
-      @print_buffer = ""
       @ignore_files = collect_files_to_ignore(ignore_file_globs)
 
       @pairs = coalesce_pairs(@pairs)
@@ -116,18 +117,11 @@ module CodeCounter
     end
 
     def to_s
-      @print_buffer = ''
-      print_header
-      @pairs.each { |pair| print_line(pair.first, @statistics[pair.first]) }
-      print_splitter
+      code  = calculate_code
+      tests = calculate_tests
+      test_ratio = "1:%.1f" % x_over_y(tests.to_f, code)
 
-      if @total
-        print_line("Total", @total)
-        print_splitter
-      end
-
-      print_code_test_stats
-      @print_buffer
+      @reporter.report(@total, @pairs, @statistics, code, tests, test_ratio)
     end
 
     protected
@@ -175,6 +169,9 @@ module CodeCounter
         end
       end
 
+      stats['m_over_c'] = x_over_y(stats['methods'], stats['classes'])
+      stats['loc_over_m'] = compute_effective_loc_over_m(stats)
+
       return stats
     end
 
@@ -202,7 +199,11 @@ module CodeCounter
 
     def calculate_total
       total = blank_stats
-      @statistics.each_value { |pair| pair.each { |k, v| total[k] += v } }
+      @statistics.each_value do |pair|
+        pair.each do |k, v|
+          total[k] += v if total[k]
+        end
+      end
       total
     end
 
@@ -220,42 +221,11 @@ module CodeCounter
       type_loc
     end
 
-    # TODO: Make this respond to changes caused by `.add_path` and
-    # TODO: `.add_test_group`.
-    COL_WIDTHS      = [[22,-1], [7,1], [7,1], [9,1], [9,1], [5,1], [7,1]]
-    HEADERS         = ['Name', 'Lines', 'LOC', 'Classes', 'Methods', 'M/C', 'LOC/M']
-
-    HEADER_PATTERN  = '|' + COL_WIDTHS.map { |(w,_)| " %-#{w}s " }.join('|') + "|\n"
-    ROW_PATTERN     = '|' + COL_WIDTHS.map { |(w,d)| " %#{w*d}s " }.join('|') + "|\n"
-    SPLITTER        = (HEADER_PATTERN % COL_WIDTHS.map { |(w,_)| '-' * w }).gsub(/ /, '-')
-
-    def print_header
-      print_splitter
-      @print_buffer << HEADER_PATTERN % HEADERS
-      print_splitter
-    end
-
-    def print_splitter
-      @print_buffer << SPLITTER
-    end
 
     def x_over_y(top, bottom)
       return (bottom > 0) ? (top / bottom) : 0
     end
 
-    def print_line(name, stats)
-      return if stats['lines'] == 0
-
-      @print_buffer << ROW_PATTERN % arrange_line_data(name, stats)
-    end
-
-    def print_code_test_stats
-      code  = calculate_code
-      tests = calculate_tests
-      ratio = "%.1f" % x_over_y(tests.to_f, code)
-
-      @print_buffer << " Code LOC: #{code}  Test LOC: #{tests}  Code to Test Ratio: 1:#{ratio}\n\n"
-    end
 
     def compute_effective_loc_over_m(stats)
       # Ugly hack for subtracting out class/end.  >.<
@@ -264,17 +234,6 @@ module CodeCounter
       return loc_over_m
     end
 
-    def arrange_line_data(name, stats)
-      return [
-        name,
-        stats['lines'],
-        stats['codelines'],
-        stats['classes'],
-        stats['methods'],
-        x_over_y(stats["methods"], stats["classes"]),
-        compute_effective_loc_over_m(stats),
-      ]
-    end
 
     BLANK_STATS_TEMPLATE = {
       'lines'     => 0,
