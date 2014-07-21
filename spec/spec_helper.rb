@@ -26,7 +26,7 @@ def capture_stdout(&block)
   fake.string
 end
 
-$LOAD_PATH << File.expand_path("../../lib", __FILE__)
+$LOAD_PATH << File.expand_path('../../lib', __FILE__)
 
 require 'pathname'
 PROJECT_DIR = Pathname.new(Dir.pwd).expand_path

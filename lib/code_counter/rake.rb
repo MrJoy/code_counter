@@ -11,7 +11,7 @@ if(defined?(Rake::Task))
   end
 
   unless(Rake::Task.task_defined?(:stats))
-    desc "Report code statistics (KLOCs, etc) from the application."
+    desc 'Report code statistics (KLOCs, etc) from the application.'
     task :stats => :code_counter
   end
 end

@@ -39,7 +39,7 @@ module CodeCounter
     end
 
     def add_group(group)
-      raise "Can only call `#add_group` on aggregates!" unless @is_aggregate
+      raise 'Can only call `#add_group` on aggregates!' unless @is_aggregate
 
       add_lines(group.lines_raw, group.lines_code)
       add_classes(group.classes)

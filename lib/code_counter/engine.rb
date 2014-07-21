@@ -76,9 +76,9 @@ module CodeCounter
     ]
 
     DEFAULT_TEST_GROUPS = [
-      "Unit tests",
-      "RSpec specs",
-      "Features",
+      'Unit tests',
+      'RSpec specs',
+      'Features',
     ]
 
     DEFAULT_BARE_FILES = [
@@ -157,7 +157,7 @@ module CodeCounter
     def to_s
       code  = calculate_code
       tests = calculate_tests
-      test_ratio = "1:%.1f" % safe_div(tests.to_f, code)
+      test_ratio = '1:%.1f' % safe_div(tests.to_f, code)
 
       @reporter.report(@total, @pairs, @statistics, code, tests, test_ratio)
     end
@@ -220,7 +220,7 @@ module CodeCounter
     end
 
     def calculate_total
-      total = CodeCounter::StatisticsGroup.new("Total", true)
+      total = CodeCounter::StatisticsGroup.new('Total', true)
       @statistics.each_value do |stats|
         total.add_group(stats)
       end

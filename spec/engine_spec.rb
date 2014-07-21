@@ -99,7 +99,7 @@ describe CodeCounter::Engine do
         :test_loc   => /Test LOC: 3/,
       },
       :testunit_shallow => {
-        :mappings   => { :source => [['test', File.expand_path("testunit_shallow/test")]] },
+        :mappings   => { :source => [['test', File.expand_path('testunit_shallow/test')]] },
         :test_label => /Unit tests/,
         :test_loc   => /Test LOC: 3/,
       },
@@ -133,11 +133,11 @@ describe CodeCounter::Engine do
   let(:ratio)       { fixture_data[fixture][:ratio] }
   let(:path)        { fixture_data[fixture][:path] || fixture.to_s }
 
-  context "Simple Fixture with Named Directory Mapping" do
+  context 'Simple Fixture with Named Directory Mapping' do
     let(:fixture) { :simple }
 
-    describe "Library" do
-      it "finds passed-in directories" do
+    describe 'Library' do
+      it 'finds passed-in directories' do
         output = run_lib!(path, mappings)
 
         expect(output).to match(dir_label)
@@ -145,8 +145,8 @@ describe CodeCounter::Engine do
       end
     end
 
-    context "CLI" do
-      it "finds directories specified with ADDITIONAL_SOURCE_DIRECTORIES env var, and labels them as specified" do
+    context 'CLI' do
+      it 'finds directories specified with ADDITIONAL_SOURCE_DIRECTORIES env var, and labels them as specified' do
         output = run_cli!(path, mappings)
 
         expect(output).to match(dir_label)
@@ -155,11 +155,11 @@ describe CodeCounter::Engine do
     end
   end
 
-  context "Simple Fixture with Default Directory Mapping" do
-    context "CLI" do
+  context 'Simple Fixture with Default Directory Mapping' do
+    context 'CLI' do
       let(:fixture) { :simple_default_labels }
 
-      it "finds directories specified with ADDITIONAL_SOURCE_DIRECTORIES env var, and labels them using default mappings if no label is given" do
+      it 'finds directories specified with ADDITIONAL_SOURCE_DIRECTORIES env var, and labels them using default mappings if no label is given' do
         output = run_cli!(path, mappings)
 
         expect(output).to match(dir_label)
@@ -168,7 +168,7 @@ describe CodeCounter::Engine do
     end
   end
 
-  context "Library" do
+  context 'Library' do
     let(:fixture) { :simple }
 
     it "doesn't duplicate passed-in directories with same paths with slashes" do
@@ -179,10 +179,10 @@ describe CodeCounter::Engine do
     end
   end
 
-  context "Library" do
+  context 'Library' do
     let(:fixture) { :controller }
 
-    it "finds app controllers directory" do
+    it 'finds app controllers directory' do
       output = run_lib!(path, mappings)
 
       expect(output).to match(dir_label)
@@ -190,7 +190,7 @@ describe CodeCounter::Engine do
     end
   end
 
-  context "Library" do
+  context 'Library' do
     let(:fixture) { :empty_subdir }
 
     it "doesn't double-count app directory when we have empty sub-directories" do
@@ -201,10 +201,10 @@ describe CodeCounter::Engine do
     end
   end
 
-  context "Library" do
+  context 'Library' do
     let(:fixture) { :rspec }
 
-    it "adds spec sub-directories and count as test code" do
+    it 'adds spec sub-directories and count as test code' do
       output = run_lib!(path, mappings)
 
       expect(output).to match(test_label)
@@ -212,10 +212,10 @@ describe CodeCounter::Engine do
     end
   end
 
-  context "Library" do
+  context 'Library' do
     let(:fixture) { :rspec_subdir }
 
-    it "adds spec sub-sub-directories and count as test code" do
+    it 'adds spec sub-sub-directories and count as test code' do
       output = run_lib!(path, mappings)
 
       expect(output).to match(test_label)
@@ -223,10 +223,10 @@ describe CodeCounter::Engine do
     end
   end
 
-  context "Library" do
+  context 'Library' do
     let(:fixture) { :rspec_complex }
 
-    it "adds spec sub-sub-directories but add highest level directory with test files and count as test code" do
+    it 'adds spec sub-sub-directories but add highest level directory with test files and count as test code' do
       output = run_lib!(path, mappings)
 
       expect(output).to match(test_label)
@@ -234,9 +234,9 @@ describe CodeCounter::Engine do
     end
   end
 
-  context "Library" do
+  context 'Library' do
     let(:fixture) { :rspec_shallow }
-    it "adds spec root directory and count as test code" do
+    it 'adds spec root directory and count as test code' do
       output = run_lib!(path, mappings)
 
       expect(output).to match(test_label)
@@ -244,10 +244,10 @@ describe CodeCounter::Engine do
     end
   end
 
-  context "Library" do
+  context 'Library' do
     let(:fixture) { :testunit_complex }
 
-    it "adds test sub-directories and count as test code" do
+    it 'adds test sub-directories and count as test code' do
       output = run_lib!(path, mappings)
 
       expect(output).to match(test_label)
@@ -255,10 +255,10 @@ describe CodeCounter::Engine do
     end
   end
 
-  context "Library" do
+  context 'Library' do
     let(:fixture) { :testunit_shallow }
 
-    it "adds test root directory and count as test code" do
+    it 'adds test root directory and count as test code' do
       output = run_lib!(path, mappings)
 
       expect(output).to match(test_label)
@@ -266,10 +266,10 @@ describe CodeCounter::Engine do
     end
   end
 
-  context "Library" do
+  context 'Library' do
     let(:fixture) { :testunit_shallow }
 
-    it "counts test directory even if passed in as full path" do
+    it 'counts test directory even if passed in as full path' do
       output = run_lib!(path, mappings)
 
       expect(output).to match(test_label)
@@ -277,10 +277,10 @@ describe CodeCounter::Engine do
     end
   end
 
-  context "Library" do
+  context 'Library' do
     let(:fixture) { :code_to_test_ratio }
 
-    it "calculates correct test to code ratio" do
+    it 'calculates correct test to code ratio' do
       output = run_lib!(path, mappings)
 
       expect(output).to match(code_loc)
@@ -289,10 +289,10 @@ describe CodeCounter::Engine do
     end
   end
 
-  context "Library" do
+  context 'Library' do
     let(:fixture) { :code_to_test_ratio_with_ignores }
 
-    it "ignores the specified file globs" do
+    it 'ignores the specified file globs' do
       output = run_lib!(path, mappings, ignores)
 
       expect(output).to match(code_loc)
@@ -301,11 +301,11 @@ describe CodeCounter::Engine do
     end
   end
 
-  context "Scripts" do
+  context 'Scripts' do
     let(:fixture) { :scripts }
 
-    context "Library" do
-      it "finds files without extensions in script directories" do
+    context 'Library' do
+      it 'finds files without extensions in script directories' do
         output = run_lib!(path, mappings.merge(:scripts => []))
 
         expect(output).to match(dir_label[:simple])
@@ -313,15 +313,15 @@ describe CodeCounter::Engine do
       end
     end
 
-    context "CLI" do
-      it "finds files without extensions in script directories" do
+    context 'CLI' do
+      it 'finds files without extensions in script directories' do
         output = run_cli!(path, mappings.merge(:scripts => []))
 
         expect(output).to match(dir_label[:simple])
         expect(output).to match(code_loc[:simple])
       end
 
-      it "allows mapping of script dirs using the ADDITIONAL_SCRIPT_DIRECTORY env var" do
+      it 'allows mapping of script dirs using the ADDITIONAL_SCRIPT_DIRECTORY env var' do
         output = run_cli!(path, mappings)
 
         expect(output).to match(dir_label[:fancy])
